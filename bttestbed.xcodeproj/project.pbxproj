@@ -8,26 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		72DFC68719AFE71E002F3FF3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72DFC68619AFE71E002F3FF3 /* main.cpp */; };
-		72DFC68919AFE71E002F3FF3 /* bttestbed.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 72DFC68819AFE71E002F3FF3 /* bttestbed.1 */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		72DFC68119AFE71E002F3FF3 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-				72DFC68919AFE71E002F3FF3 /* bttestbed.1 in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		72DFC68319AFE71E002F3FF3 /* bttestbed */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bttestbed; sourceTree = BUILT_PRODUCTS_DIR; };
 		72DFC68619AFE71E002F3FF3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		72DFC68819AFE71E002F3FF3 /* bttestbed.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = bttestbed.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +46,6 @@
 			isa = PBXGroup;
 			children = (
 				72DFC68619AFE71E002F3FF3 /* main.cpp */,
-				72DFC68819AFE71E002F3FF3 /* bttestbed.1 */,
 			);
 			path = bttestbed;
 			sourceTree = "<group>";
@@ -75,7 +59,6 @@
 			buildPhases = (
 				72DFC67F19AFE71E002F3FF3 /* Sources */,
 				72DFC68019AFE71E002F3FF3 /* Frameworks */,
-				72DFC68119AFE71E002F3FF3 /* CopyFiles */,
 			);
 			buildRules = (
 			);
