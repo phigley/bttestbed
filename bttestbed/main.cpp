@@ -13,7 +13,7 @@
 
 int main(int argc, const char * argv[])
 {
-	SdlApplication app{640, 480};
+	SdlApplication app{800, 800};
 
     app.addEntity<NPC>();
     
