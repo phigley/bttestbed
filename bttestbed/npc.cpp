@@ -7,12 +7,22 @@
 //
 
 #include "npc.h"
+#include "npcbehavior.h"
 
 #include <algorithm>
 
 
+
+NPC::NPC()
+    : rootBehavior{ *this, NPCBehavior::NPCBehaviorPtr{new MoveAtVelocityBehavior{ *this, glm::vec2{-0.5, 0.1}} } }
+{
+    rootBehavior.initialize();
+}
+
 void NPC::update(float dt)
 {
+    rootBehavior.update(dt);
+
     if( currentState )
         currentState->update(dt);
 }
