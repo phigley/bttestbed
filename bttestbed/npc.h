@@ -15,7 +15,7 @@ class NPC : public Entity
 {
 public:
 
-    virtual void update(float dt) override { }
+    virtual void update(float dt) override;
 
 };
 

@@ -35,18 +35,21 @@ bool SdlApplication::beginFrame()
 {
 	// Enter to the SDL event loop.
 	SDL_Event ev;
-
-    if( !SDL_WaitEvent(&ev) )
+    while( SDL_PollEvent(&ev) != 0 )
     {
-        return false;
+        if( !onEvent(&ev) )
+            return false;
     }
     
-    if( !onEvent(&ev) )
-        return false;
+    
+    const std::uint32_t newTime = SDL_GetTicks();
+    
+    const float fDeltaTime = float(newTime - currentTime)*1e-3f;
+    currentTime = newTime;
     
     for(auto& entityPtr : entityPtrs)
     {
-        entityPtr->update(0.0f);
+        entityPtr->update(fDeltaTime);
     }
     
     return true;
@@ -67,6 +70,7 @@ bool SdlApplication::onEvent(SDL_Event* ev)
 				return false;
 			}
 		}
+        break;
 	}
     
     return true;
@@ -88,6 +92,7 @@ void SdlApplication::render()
 
 	
 	SDL_RenderPresent(renderer);
+    SDL_Delay(10);
 }
 
 

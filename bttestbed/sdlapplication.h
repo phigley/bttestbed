@@ -35,6 +35,8 @@ private:
     
     std::vector<EntityPtr> entityPtrs;
     
+    std::uint32_t currentTime = 0;
+    
 	// Whether the application is in event loop.
 	bool quit = false;
 	SDL_Window* win = nullptr;
