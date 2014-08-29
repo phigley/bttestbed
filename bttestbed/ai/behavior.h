@@ -27,7 +27,7 @@ namespace AI
             Fail
         };
         
-        typedef std::shared_ptr<Behavior> NPCBehaviorPtr;
+        typedef std::shared_ptr<Behavior> Ptr;
         
     public:
 
@@ -67,7 +67,7 @@ namespace AI
         
     private :
 
-        std::vector<NPCBehaviorPtr> children;
+        std::vector<Ptr> children;
         Behavior*                activeChild = nullptr;
     };
 
