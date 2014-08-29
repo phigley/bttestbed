@@ -8,11 +8,11 @@
 
 #include <iostream>
 
+#include "sdlapplication.h"
+
 int main(int argc, const char * argv[])
 {
-
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    return 0;
+	SdlApplication app;
+	return app.run(640, 480);
 }
 
