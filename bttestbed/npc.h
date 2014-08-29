@@ -23,7 +23,7 @@ public:
     template<typename T, typename... Args>
     void setState(Args&&... args)
     {
-        currentState = std::unique_ptr<NPCState>{ new T{std::forward<Args>(args)...} };
+        currentState = std::unique_ptr<NPCState>{ new T{*this, std::forward<Args>(args)...} };
     }
 
 private:
