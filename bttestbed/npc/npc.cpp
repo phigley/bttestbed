@@ -11,15 +11,15 @@
 
 #include <algorithm>
 
+using namespace AI;
 
-
-NPC::NPC()
+AI::NPC::NPC()
     : rootBehavior{ *this, NPCBehavior::NPCBehaviorPtr{new MoveAtVelocityBehavior{ *this, glm::vec2{-0.5, 0.1}} } }
 {
     rootBehavior.initialize();
 }
 
-void NPC::update(float dt)
+void AI::NPC::update(float dt)
 {
     rootBehavior.update(dt);
 

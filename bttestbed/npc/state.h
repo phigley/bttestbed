@@ -11,43 +11,46 @@
 
 #include "glm/glm.hpp"
 
-class NPC;
-
-class NPCState
+namespace AI
 {
-public:
+    class NPC;
 
-    NPCState(NPC& _npc)
-        : npc(_npc)
-    { }
-    
-    virtual ~NPCState() { }
-    
-    virtual void update(float dt) = 0;
-    
+    class NPCState
+    {
+    public:
 
-    NPC& getNPC() { return npc; }
-    const NPC& getNPC() const { return npc; }
+        NPCState(NPC& _npc)
+            : npc(_npc)
+        { }
+        
+        virtual ~NPCState() { }
+        
+        virtual void update(float dt) = 0;
+        
 
-private:
+        NPC& getNPC() { return npc; }
+        const NPC& getNPC() const { return npc; }
 
-    NPC& npc;
-};
+    private:
 
-class MoveAtVelocity : public NPCState
-{
-public:
+        NPC& npc;
+    };
 
-    MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
-        : NPCState(_npc)
-        , velocity(_velocity)
-    { }
-    
-    virtual void update(float dt) override;
-    
-private :
+    class MoveAtVelocity : public NPCState
+    {
+    public:
 
-    glm::vec2 velocity;
-};
+        MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
+            : NPCState(_npc)
+            , velocity(_velocity)
+        { }
+        
+        virtual void update(float dt) override;
+        
+    private :
+
+        glm::vec2 velocity;
+    };
+}
 
 #endif

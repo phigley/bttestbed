@@ -17,7 +17,7 @@ int main(int argc, const char * argv[])
 {
 	SdlApplication app{800, 800};
 
-    app.addEntity<NPC>();
+    app.addEntity<AI::NPC>();
     
     while( app.beginFrame() )
     {

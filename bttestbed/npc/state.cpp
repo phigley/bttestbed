@@ -9,7 +9,9 @@
 #include "state.h"
 #include "npc.h"
 
-void MoveAtVelocity::update(float dt)
+using namespace AI;
+
+void AI::MoveAtVelocity::update(float dt)
 {
     getNPC().moveBy( velocity*dt );
 }

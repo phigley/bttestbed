@@ -12,81 +12,84 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-class NPC;
-
-class NPCBehavior
+namespace AI
 {
-public:
+    class NPC;
 
-    enum class Result
+    class NPCBehavior
     {
-        Continue,
-        Complete,
-        Fail
+    public:
+
+        enum class Result
+        {
+            Continue,
+            Complete,
+            Fail
+        };
+        
+        typedef std::shared_ptr<NPCBehavior> NPCBehaviorPtr;
+        
+    public:
+
+        NPCBehavior(NPC& _npc)
+            : npc{_npc}
+        { }
+        
+        virtual ~NPCBehavior() { }
+
+        virtual Result initialize() { return Result::Continue; }
+        virtual Result update(float dt) { return Result::Continue; }
+        virtual void term() { }
+        
+        NPC& getNPC() { return npc; }
+        const NPC& getNPC() const { return npc; }
+
+    private:
+
+        NPC& npc;
     };
-    
-    typedef std::shared_ptr<NPCBehavior> NPCBehaviorPtr;
-    
-public:
-
-    NPCBehavior(NPC& _npc)
-        : npc{_npc}
-    { }
-    
-    virtual ~NPCBehavior() { }
-
-    virtual Result initialize() { return Result::Continue; }
-    virtual Result update(float dt) { return Result::Continue; }
-    virtual void term() { }
-    
-    NPC& getNPC() { return npc; }
-    const NPC& getNPC() const { return npc; }
-
-private:
-
-    NPC& npc;
-};
 
 
-class BehaviorSelector : public NPCBehavior
-{
-public:
-
-    template<typename... Args>
-    BehaviorSelector(NPC& _npc, Args&&... _children)
-        : NPCBehavior{_npc}
-        , children{ std::forward<Args>(_children)... }
+    class BehaviorSelector : public NPCBehavior
     {
-    }
-    
-    virtual Result initialize() override;
-    virtual Result update(float dt) override;
-    virtual void term() override;
-    
-private :
+    public:
 
-    std::vector<NPCBehaviorPtr> children;
-    NPCBehavior*                activeChild = nullptr;
-};
+        template<typename... Args>
+        BehaviorSelector(NPC& _npc, Args&&... _children)
+            : NPCBehavior{_npc}
+            , children{ std::forward<Args>(_children)... }
+        {
+        }
+        
+        virtual Result initialize() override;
+        virtual Result update(float dt) override;
+        virtual void term() override;
+        
+    private :
 
-class MoveAtVelocityBehavior : public NPCBehavior
-{
-public:
+        std::vector<NPCBehaviorPtr> children;
+        NPCBehavior*                activeChild = nullptr;
+    };
 
-    MoveAtVelocityBehavior(NPC& _npc, const glm::vec2& _velocity)
-        : NPCBehavior{_npc}
-        , velocity{_velocity}
+    class MoveAtVelocityBehavior : public NPCBehavior
     {
-    }
-    
-    virtual Result initialize() override;
-    virtual Result update(float dt) override;
-    virtual void term() override;
+    public:
 
-private:
+        MoveAtVelocityBehavior(NPC& _npc, const glm::vec2& _velocity)
+            : NPCBehavior{_npc}
+            , velocity{_velocity}
+        {
+        }
+        
+        virtual Result initialize() override;
+        virtual Result update(float dt) override;
+        virtual void term() override;
 
-    glm::vec2 velocity;
+    private:
 
-};
+        glm::vec2 velocity;
+
+    };
+}
 
 #endif

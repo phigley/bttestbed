@@ -10,7 +10,9 @@
 #include "state.h"
 #include "npc.h"
 
-NPCBehavior::Result BehaviorSelector::initialize()
+using namespace AI;
+
+NPCBehavior::Result AI::BehaviorSelector::initialize()
 {
     for( auto& child : children )
     {
@@ -25,7 +27,7 @@ NPCBehavior::Result BehaviorSelector::initialize()
     return Result::Fail;
 }
 
-NPCBehavior::Result BehaviorSelector::update(float dt)
+NPCBehavior::Result AI::BehaviorSelector::update(float dt)
 {
     if( activeChild )
         return activeChild->update(dt);
@@ -43,18 +45,18 @@ void BehaviorSelector::term()
 }
 
 
-NPCBehavior::Result MoveAtVelocityBehavior::initialize()
+NPCBehavior::Result AI::MoveAtVelocityBehavior::initialize()
 {
     getNPC().setState<MoveAtVelocity>(velocity);
     return Result::Continue;
 }
 
-NPCBehavior::Result MoveAtVelocityBehavior::update(float dt)
+NPCBehavior::Result AI::MoveAtVelocityBehavior::update(float dt)
 {
     return Result::Continue;
 }
 
-void MoveAtVelocityBehavior::term()
+void AI::MoveAtVelocityBehavior::term()
 {
     getNPC().clearState();
 }

@@ -15,30 +15,33 @@
 
 #include <memory>
 
-class NPC : public Entity
+namespace AI
 {
-public:
-
-    NPC();
-
-    virtual void update(float dt) override;
-
-    template<typename T, typename... Args>
-    void setState(Args&&... args)
+    class NPC : public Entity
     {
-        currentState = std::unique_ptr<NPCState>{ new T{*this, std::forward<Args>(args)...} };
-    }
+    public:
 
-    void clearState()
-    {
-        currentState = nullptr;
-    }
-    
-private:
+        NPC();
 
-    BehaviorSelector rootBehavior;
+        virtual void update(float dt) override;
 
-    std::unique_ptr<NPCState> currentState;
-};
+        template<typename T, typename... Args>
+        void setState(Args&&... args)
+        {
+            currentState = std::unique_ptr<NPCState>{ new T{*this, std::forward<Args>(args)...} };
+        }
+
+        void clearState()
+        {
+            currentState = nullptr;
+        }
+        
+    private:
+
+        BehaviorSelector rootBehavior;
+
+        std::unique_ptr<NPCState> currentState;
+    };
+}
 
 #endif
