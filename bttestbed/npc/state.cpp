@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Peter Higley. All rights reserved.
 //
 
-#include "npcstate.h"
+#include "state.h"
 #include "npc.h"
 
 void MoveAtVelocity::update(float dt)

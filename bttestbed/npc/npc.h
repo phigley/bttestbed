@@ -10,8 +10,8 @@
 #define bttestbed_npc_h
 
 #include "entity.h"
-#include "npcstate.h"
-#include "npcbehavior.h"
+#include "state.h"
+#include "behavior.h"
 
 #include <memory>
 

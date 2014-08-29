@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "sdlapplication.h"
-#include "npc.h"
-#include "npcstate.h"
+#include "npc/npc.h"
+#include "npc/state.h"
 
 int main(int argc, const char * argv[])
 {

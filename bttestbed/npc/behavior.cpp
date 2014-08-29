@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Peter Higley. All rights reserved.
 //
 
-#include "npcbehavior.h"
-#include "npcstate.h"
+#include "behavior.h"
+#include "state.h"
 #include "npc.h"
 
 NPCBehavior::Result BehaviorSelector::initialize()

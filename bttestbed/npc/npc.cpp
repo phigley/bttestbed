@@ -7,7 +7,7 @@
 //
 
 #include "npc.h"
-#include "npcbehavior.h"
+#include "behavior.h"
 
 #include <algorithm>
 
