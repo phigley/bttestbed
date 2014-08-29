@@ -9,7 +9,7 @@
 SdlApplication::SdlApplication(int width, int height)
 {
 	// Initialize the SDL library.
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
         std::string msg = "SDL_INIT() failed: ";
         msg += SDL_GetError();
