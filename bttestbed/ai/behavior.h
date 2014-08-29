@@ -16,7 +16,7 @@ namespace AI
 {
     class NPC;
 
-    class NPCBehavior
+    class Behavior
     {
     public:
 
@@ -27,15 +27,15 @@ namespace AI
             Fail
         };
         
-        typedef std::shared_ptr<NPCBehavior> NPCBehaviorPtr;
+        typedef std::shared_ptr<Behavior> NPCBehaviorPtr;
         
     public:
 
-        NPCBehavior(NPC& _npc)
+        Behavior(NPC& _npc)
             : npc{_npc}
         { }
         
-        virtual ~NPCBehavior() { }
+        virtual ~Behavior() { }
 
         virtual Result initialize() { return Result::Continue; }
         virtual Result update(float dt) { return Result::Continue; }
@@ -50,13 +50,13 @@ namespace AI
     };
 
 
-    class BehaviorSelector : public NPCBehavior
+    class BehaviorSelector : public Behavior
     {
     public:
 
         template<typename... Args>
         BehaviorSelector(NPC& _npc, Args&&... _children)
-            : NPCBehavior{_npc}
+            : Behavior{_npc}
             , children{ std::forward<Args>(_children)... }
         {
         }
@@ -68,15 +68,15 @@ namespace AI
     private :
 
         std::vector<NPCBehaviorPtr> children;
-        NPCBehavior*                activeChild = nullptr;
+        Behavior*                activeChild = nullptr;
     };
 
-    class MoveAtVelocityBehavior : public NPCBehavior
+    class MoveAtVelocityBehavior : public Behavior
     {
     public:
 
         MoveAtVelocityBehavior(NPC& _npc, const glm::vec2& _velocity)
-            : NPCBehavior{_npc}
+            : Behavior{_npc}
             , velocity{_velocity}
         {
         }

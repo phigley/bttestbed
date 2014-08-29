@@ -28,7 +28,7 @@ namespace AI
         template<typename T, typename... Args>
         void setState(Args&&... args)
         {
-            currentState = std::unique_ptr<NPCState>{ new T{*this, std::forward<Args>(args)...} };
+            currentState = std::unique_ptr<State>{ new T{*this, std::forward<Args>(args)...} };
         }
 
         void clearState()
@@ -40,7 +40,7 @@ namespace AI
 
         BehaviorSelector rootBehavior;
 
-        std::unique_ptr<NPCState> currentState;
+        std::unique_ptr<State> currentState;
     };
 }
 

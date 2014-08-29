@@ -15,15 +15,15 @@ namespace AI
 {
     class NPC;
 
-    class NPCState
+    class State
     {
     public:
 
-        NPCState(NPC& _npc)
+        State(NPC& _npc)
             : npc(_npc)
         { }
         
-        virtual ~NPCState() { }
+        virtual ~State() { }
         
         virtual void update(float dt) = 0;
         
@@ -36,12 +36,12 @@ namespace AI
         NPC& npc;
     };
 
-    class MoveAtVelocity : public NPCState
+    class MoveAtVelocity : public State
     {
     public:
 
         MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
-            : NPCState(_npc)
+            : State(_npc)
             , velocity(_velocity)
         { }
         

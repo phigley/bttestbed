@@ -12,7 +12,7 @@
 
 using namespace AI;
 
-NPCBehavior::Result AI::BehaviorSelector::initialize()
+Behavior::Result AI::BehaviorSelector::initialize()
 {
     for( auto& child : children )
     {
@@ -27,7 +27,7 @@ NPCBehavior::Result AI::BehaviorSelector::initialize()
     return Result::Fail;
 }
 
-NPCBehavior::Result AI::BehaviorSelector::update(float dt)
+Behavior::Result AI::BehaviorSelector::update(float dt)
 {
     if( activeChild )
         return activeChild->update(dt);
@@ -45,13 +45,13 @@ void BehaviorSelector::term()
 }
 
 
-NPCBehavior::Result AI::MoveAtVelocityBehavior::initialize()
+Behavior::Result AI::MoveAtVelocityBehavior::initialize()
 {
     getNPC().setState<MoveAtVelocity>(velocity);
     return Result::Continue;
 }
 
-NPCBehavior::Result AI::MoveAtVelocityBehavior::update(float dt)
+Behavior::Result AI::MoveAtVelocityBehavior::update(float dt)
 {
     return Result::Continue;
 }
