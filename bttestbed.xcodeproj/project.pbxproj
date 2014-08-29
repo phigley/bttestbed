@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7214709319B0048D006BCDA8 /* entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7214709219B0048D006BCDA8 /* entity.cpp */; };
 		7214709519B0C4C9006BCDA8 /* npc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7214709419B0C4C9006BCDA8 /* npc.cpp */; };
+		7214755C19B1006B006BCDA8 /* npcstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7214755B19B1006B006BCDA8 /* npcstate.cpp */; };
 		72DFC68719AFE71E002F3FF3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72DFC68619AFE71E002F3FF3 /* main.cpp */; };
 		72DFC69019AFE7D0002F3FF3 /* sdlapplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72DFC68F19AFE7D0002F3FF3 /* sdlapplication.cpp */; };
 		72DFC69319AFE8F0002F3FF3 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72DFC69219AFE8F0002F3FF3 /* SDL2.framework */; };
@@ -269,6 +270,8 @@
 		7214755419B0E3E7006BCDA8 /* vec4.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec4.hpp; sourceTree = "<group>"; };
 		7214755519B0E3E7006BCDA8 /* vector_relational.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vector_relational.hpp; sourceTree = "<group>"; };
 		7214755719B0E3E7006BCDA8 /* xstream.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = xstream.hpp; sourceTree = "<group>"; };
+		7214755A19B0FF09006BCDA8 /* npcstate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = npcstate.h; sourceTree = "<group>"; };
+		7214755B19B1006B006BCDA8 /* npcstate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = npcstate.cpp; sourceTree = "<group>"; };
 		72DFC68319AFE71E002F3FF3 /* bttestbed */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bttestbed; sourceTree = BUILT_PRODUCTS_DIR; };
 		72DFC68619AFE71E002F3FF3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72DFC68F19AFE7D0002F3FF3 /* sdlapplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdlapplication.cpp; sourceTree = "<group>"; };
@@ -600,6 +603,8 @@
 				7214745619B0E3E6006BCDA8 /* glm */,
 				7214708E19B00334006BCDA8 /* entity.h */,
 				7214709219B0048D006BCDA8 /* entity.cpp */,
+				7214755A19B0FF09006BCDA8 /* npcstate.h */,
+				7214755B19B1006B006BCDA8 /* npcstate.cpp */,
 				7214709119B00435006BCDA8 /* npc.h */,
 				7214709419B0C4C9006BCDA8 /* npc.cpp */,
 				72DFC68F19AFE7D0002F3FF3 /* sdlapplication.cpp */,
@@ -659,6 +664,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7214755C19B1006B006BCDA8 /* npcstate.cpp in Sources */,
 				72DFC68719AFE71E002F3FF3 /* main.cpp in Sources */,
 				7214709519B0C4C9006BCDA8 /* npc.cpp in Sources */,
 				7214709319B0048D006BCDA8 /* entity.cpp in Sources */,
@@ -771,7 +777,7 @@
 				72DFC68B19AFE71E002F3FF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		72DFC68C19AFE71E002F3FF3 /* Build configuration list for PBXNativeTarget "bttestbed" */ = {
 			isa = XCConfigurationList;
@@ -780,7 +786,7 @@
 				72DFC68E19AFE71E002F3FF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

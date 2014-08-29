@@ -43,7 +43,7 @@ void Entity::render(SDL_Renderer* renderer, int windowWidth, int windowHeight)
 	r.w = 10;
 	r.h = 10;
 	r.x = int((currentPos.x*0.5f + 0.5f)*float(windowWidth)) - (r.w/2);
-	r.y = int((currentPos.y*0.5f + 0.5f)*float(windowHeight)) - (r.h/2);
+	r.y = int((-currentPos.y*0.5f + 0.5f)*float(windowHeight)) - (r.h/2);
 
 	SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0, 0xff);
 	SDL_RenderFillRect(renderer, &r);

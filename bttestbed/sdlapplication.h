@@ -1,3 +1,7 @@
+
+#ifndef bttestbed_sdlapplication_h
+#define bttestbed_sdlapplication_h
+
 #include <SDL2/SDL.h>
 
 #include <memory>
@@ -8,8 +12,8 @@ class Entity;
 class SdlApplication
 {
 public:
-    typedef std::unique_ptr<Entity> EntityPtr;
-    
+    typedef std::shared_ptr<Entity> EntityOwnedPtr;
+
 public:
 
 	SdlApplication(int width, int height);
@@ -19,9 +23,12 @@ public:
 	void render();
 
     template<typename T, typename... Args>
-    void addEntity(Args&&... args)
+    std::weak_ptr<T> addEntity(Args&&... args)
     {
-        entityPtrs.emplace_back(new T{std::forward<Args>(args)...});
+        auto newEntity = std::make_shared<T>(std::forward<Args>(args)...);
+        entityPtrs.push_back(newEntity);
+        
+        return newEntity;
     }
     
 private:
@@ -33,7 +40,7 @@ private:
     SdlApplication& operator=(const SdlApplication&) = delete;
     
     
-    std::vector<EntityPtr> entityPtrs;
+    std::vector<EntityOwnedPtr> entityPtrs;
     
     std::uint32_t currentTime = 0;
     
@@ -43,3 +50,4 @@ private:
 	SDL_Renderer* renderer = nullptr;
 };
 
+#endif

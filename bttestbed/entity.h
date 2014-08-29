@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Peter Higley. All rights reserved.
 //
 
-#ifndef entity_h
-#define entity_h
+#ifndef bttestbed_entity_h
+#define bttestbed_entity_h
 
 #include "glm/glm.hpp"
 

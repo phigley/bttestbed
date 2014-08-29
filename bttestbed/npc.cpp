@@ -13,7 +13,6 @@
 
 void NPC::update(float dt)
 {
-    const float velocity = 0.25f;
-    
-    moveBy(glm::vec2{velocity*dt, velocity*dt});
+    if( currentState )
+        currentState->update(dt);
 }

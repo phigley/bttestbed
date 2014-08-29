@@ -7,15 +7,25 @@
 //
 
 #include <iostream>
+#include <memory>
 
 #include "sdlapplication.h"
 #include "npc.h"
+#include "npcstate.h"
 
 int main(int argc, const char * argv[])
 {
 	SdlApplication app{800, 800};
 
-    app.addEntity<NPC>();
+    auto npcWeakPtr = app.addEntity<NPC>();
+
+    {
+        auto npcPtr = npcWeakPtr.lock();
+        if( npcPtr )
+        {
+            npcPtr->setState<MoveDown>(*npcPtr);
+        }
+    }
     
     while( app.beginFrame() )
     {
