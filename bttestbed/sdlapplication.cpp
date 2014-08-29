@@ -1,5 +1,8 @@
 
 #include "sdlapplication.h"
+
+#include "entity.h"
+
 #include <exception>
 #include <string>
 
@@ -38,7 +41,15 @@ bool SdlApplication::beginFrame()
         return false;
     }
     
-    return onEvent(&ev);
+    if( !onEvent(&ev) )
+        return false;
+    
+    for(auto& entityPtr : entityPtrs)
+    {
+        entityPtr->update(0.0f);
+    }
+    
+    return true;
 }
 
 bool SdlApplication::onEvent(SDL_Event* ev)
@@ -63,22 +74,20 @@ bool SdlApplication::onEvent(SDL_Event* ev)
 
 void SdlApplication::render()
 {
-	SDL_Rect r;
 	int w,h;
 	SDL_GetWindowSize(win, &w, &h);
-	
-	r.w = 200;
-	r.h = 200;
-	r.x = w/2-(r.w/2);
-	r.y = h/2-(r.h/2);
-	
-	
+    
 	//
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0, 0xff);
 	SDL_RenderClear(renderer);
+
+    for(auto& entityPtr : entityPtrs)
+    {
+        entityPtr->render(renderer, w, h);
+    }
+
 	
-	SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0, 0xff);
-	SDL_RenderFillRect(renderer, &r);
 	SDL_RenderPresent(renderer);
 }
+
 

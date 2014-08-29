@@ -9,11 +9,14 @@
 #include <iostream>
 
 #include "sdlapplication.h"
+#include "npc.h"
 
 int main(int argc, const char * argv[])
 {
 	SdlApplication app{640, 480};
 
+    app.addEntity<NPC>();
+    
     while( app.beginFrame() )
     {
         app.render();
