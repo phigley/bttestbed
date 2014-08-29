@@ -9,9 +9,7 @@
 #include "npcstate.h"
 #include "npc.h"
 
-void MoveDown::update(float dt)
+void MoveAtVelocity::update(float dt)
 {
-    const float velocity = 0.2f;
-    
-    getNPC().moveBy( glm::vec2{0.0f, -velocity*dt} );
+    getNPC().moveBy( velocity*dt );
 }

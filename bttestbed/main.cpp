@@ -23,7 +23,7 @@ int main(int argc, const char * argv[])
         auto npcPtr = npcWeakPtr.lock();
         if( npcPtr )
         {
-            npcPtr->setState<MoveDown>();
+            npcPtr->setState<MoveAtVelocity>( glm::vec2{0.1, -0.25f} );
         }
     }
     

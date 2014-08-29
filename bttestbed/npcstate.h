@@ -9,6 +9,8 @@
 #ifndef bttestbed_npcstate_h
 #define bttestbed_npcstate_h
 
+#include "glm/glm.hpp"
+
 class NPC;
 
 class NPCState
@@ -32,15 +34,20 @@ private:
     NPC& npc;
 };
 
-class MoveDown : public NPCState
+class MoveAtVelocity : public NPCState
 {
 public:
 
-    MoveDown(NPC& _npc)
+    MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
         : NPCState(_npc)
+        , velocity(_velocity)
     { }
     
     virtual void update(float dt) override;
+    
+private :
+
+    glm::vec2 velocity;
 };
 
 #endif
