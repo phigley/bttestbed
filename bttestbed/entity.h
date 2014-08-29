@@ -22,6 +22,16 @@ public:
     virtual void update(float dt) = 0;
     
     virtual void render(SDL_Renderer*, int windowWidth, int windowHeight);
+    
+    void moveTo(float x, float y);
+    
+    float getX() const { return currentX; }
+    float getY() const { return currentY; }
+    
+private :
+
+    float currentX = 0.0f;
+    float currentY = 0.0f;
 };
 
 #endif
