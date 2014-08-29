@@ -50,6 +50,26 @@ namespace AI
     };
 
 
+    class RootBehavior
+    {
+    public:
+    
+        template<typename... Args>
+        RootBehavior(Args&&... _children)
+            : children{ std::forward<Args>(_children)... }
+            , activeChild{ std::size_t(-1) }
+        { }
+        
+        ~RootBehavior();
+        
+        void update(float dt);
+        
+    private :
+
+        std::vector<Behavior::Ptr>    children;
+        std::size_t                   activeChild;
+    };
+
     class BehaviorSelector : public Behavior
     {
     public:
@@ -67,7 +87,7 @@ namespace AI
         
     private :
 
-        std::vector<Ptr> children;
+        std::vector<Ptr>    children;
         Behavior*                activeChild = nullptr;
     };
 

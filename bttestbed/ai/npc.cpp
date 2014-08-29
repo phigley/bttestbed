@@ -14,9 +14,8 @@
 using namespace AI;
 
 AI::NPC::NPC()
-    : rootBehavior{ *this, Behavior::Ptr{new MoveAtVelocityBehavior{ *this, glm::vec2{-0.5, 0.1}} } }
+    : rootBehavior{ Behavior::Ptr{new MoveAtVelocityBehavior{ *this, glm::vec2{-0.5, 0.1}} } }
 {
-    rootBehavior.initialize();
 }
 
 void AI::NPC::update(float dt)

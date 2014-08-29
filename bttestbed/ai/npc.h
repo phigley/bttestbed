@@ -38,7 +38,7 @@ namespace AI
         
     private:
 
-        BehaviorSelector rootBehavior;
+        RootBehavior rootBehavior;
 
         std::unique_ptr<State> currentState;
     };

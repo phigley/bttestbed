@@ -12,6 +12,46 @@
 
 using namespace AI;
 
+AI::RootBehavior::~RootBehavior()
+{
+    if( activeChild < children.size() )
+    {
+        children[activeChild]->term();
+    }
+}
+
+void AI::RootBehavior::update(float dt)
+{
+    Behavior::Result result = Behavior::Result::Fail;
+    
+    if( activeChild < children.size() )
+    {
+        result = children[activeChild]->update(dt);
+    }
+    else
+    {
+        for( activeChild = 0; result != Behavior::Result::Continue && activeChild < children.size(); ++activeChild )
+        {
+            result = children[activeChild]->initialize();
+        }
+    }
+    
+    switch( result )
+    {
+    case Behavior::Result::Fail :
+    case Behavior::Result::Complete :
+        if( activeChild < children.size() )
+        {
+            children[activeChild]->term();
+            activeChild = std::size_t(-1);
+        }
+        break;
+        
+    case Behavior::Result::Continue :
+        break;
+    }
+}
+
 Behavior::Result AI::BehaviorSelector::initialize()
 {
     for( auto& child : children )
