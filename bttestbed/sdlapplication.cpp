@@ -1,34 +1,24 @@
 
 #include "sdlapplication.h"
+#include <exception>
+#include <string>
 
-SdlApplication::SdlApplication() :
-_running(false)
-{
-}
-
-SdlApplication::~SdlApplication()
-{
-	destroy();
-}
-
-int SdlApplication::init(int width, int height)
+SdlApplication::SdlApplication(int width, int height)
 {
 	// Initialize the SDL library.
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	{
-		fprintf(stderr, "SDL_Init() failed: %s\n", SDL_GetError());
-		return APP_FAILED;
+        std::string msg = "SDL_INIT() failed: ";
+        msg += SDL_GetError();
+        throw std::runtime_error(msg);
 	}
 	
     const char apptitle[] = "SDL Sample Application";
 	win = SDL_CreateWindow(apptitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
 	renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	
-	// Success.
-	return APP_OK;
 }
 
-void SdlApplication::destroy()
+SdlApplication::~SdlApplication()
 {
 	if (win)
 	{
@@ -38,49 +28,40 @@ void SdlApplication::destroy()
 	}
 }
 
-int SdlApplication::run(int width, int height)
+bool SdlApplication::beginFrame()
 {
-	// Initialize application.
-	int state = init(width, height);
-	if (state != APP_OK) return state;
-	
 	// Enter to the SDL event loop.
 	SDL_Event ev;
-	_running = true;
-	
-	while (SDL_WaitEvent(&ev))
-	{
-		onEvent(&ev);
-		Render();
-		
-		if (_running == false)
-		{
-			break;
-		}
-	}
-	
-	return APP_OK;
+
+    if( !SDL_WaitEvent(&ev) )
+    {
+        return false;
+    }
+    
+    return onEvent(&ev);
 }
 
-void SdlApplication::onEvent(SDL_Event* ev)
+bool SdlApplication::onEvent(SDL_Event* ev)
 {
 	switch (ev->type)
 	{
 		case SDL_QUIT:
-			_running = false;
+			return false;
 			break;
 			
 		case SDL_KEYDOWN:
 		{
 			if (ev->key.keysym.sym == SDLK_ESCAPE)
 			{
-				_running = false;
+				return false;
 			}
 		}
 	}
+    
+    return true;
 }
 
-void SdlApplication::Render()
+void SdlApplication::render()
 {
 	SDL_Rect r;
 	int w,h;

@@ -12,7 +12,13 @@
 
 int main(int argc, const char * argv[])
 {
-	SdlApplication app;
-	return app.run(640, 480);
+	SdlApplication app{640, 480};
+
+    while( app.beginFrame() )
+    {
+        app.render();
+    }
+
+    return 0;
 }
 
