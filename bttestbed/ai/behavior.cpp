@@ -22,37 +22,46 @@ AI::RootBehavior::~RootBehavior()
 
 void AI::RootBehavior::update(float dt)
 {
-    Behavior::Result result = Behavior::Result::Fail;
+    
+    for( std::size_t currentChild = 0; currentChild < activeChild; ++currentChild )
+    {
+        const auto initializeResult = children[currentChild]->initialize();
+        if( initializeResult != Result::Fail )
+        {
+            if( activeChild < children.size() )
+            {
+                children[activeChild]->term();
+            }
+            
+            dt = 0.0f;
+            activeChild = currentChild;
+            break;
+        }
+    }
     
     if( activeChild < children.size() )
     {
-        result = children[activeChild]->update(dt);
-    }
-    else
-    {
-        for( activeChild = 0; result != Behavior::Result::Continue && activeChild < children.size(); ++activeChild )
+        const auto updateResult = children[activeChild]->update(dt);
+
+        switch( updateResult )
         {
-            result = children[activeChild]->initialize();
+        case Result::Fail :
+        case Result::Complete :
+            if( activeChild < children.size() )
+            {
+                children[activeChild]->term();
+                activeChild = std::size_t(-1);
+            }
+            break;
+            
+        case Result::Continue :
+            break;
         }
     }
     
-    switch( result )
-    {
-    case Behavior::Result::Fail :
-    case Behavior::Result::Complete :
-        if( activeChild < children.size() )
-        {
-            children[activeChild]->term();
-            activeChild = std::size_t(-1);
-        }
-        break;
-        
-    case Behavior::Result::Continue :
-        break;
-    }
 }
 
-Behavior::Result AI::BehaviorSelector::initialize()
+Result AI::BehaviorSelector::initialize()
 {
     for( auto& child : children )
     {
@@ -67,7 +76,7 @@ Behavior::Result AI::BehaviorSelector::initialize()
     return Result::Fail;
 }
 
-Behavior::Result AI::BehaviorSelector::update(float dt)
+Result AI::BehaviorSelector::update(float dt)
 {
     if( activeChild )
         return activeChild->update(dt);
@@ -85,18 +94,25 @@ void BehaviorSelector::term()
 }
 
 
-Behavior::Result AI::MoveAtVelocityBehavior::initialize()
+Result AI::MoveAtVelocityBehavior::initialize()
 {
-    getNPC().setState<MoveAtVelocity>(velocity);
+    state = std::unique_ptr<MoveAtVelocityState>(new MoveAtVelocityState(getNPC(), velocity));
+    
+    if( !state )
+        return Result::Fail;
+    
     return Result::Continue;
 }
 
-Behavior::Result AI::MoveAtVelocityBehavior::update(float dt)
+Result AI::MoveAtVelocityBehavior::update(float dt)
 {
-    return Result::Continue;
+    if( !state )
+        return Result::Fail;
+
+    return state->update(dt);
 }
 
 void AI::MoveAtVelocityBehavior::term()
 {
-    getNPC().clearState();
+    state = nullptr;
 }

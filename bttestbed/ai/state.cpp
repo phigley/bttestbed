@@ -11,7 +11,9 @@
 
 using namespace AI;
 
-void AI::MoveAtVelocity::update(float dt)
+AI::Result AI::MoveAtVelocityState::update(float dt)
 {
     getNPC().moveBy( velocity*dt );
+    
+    return Result::Continue;
 }

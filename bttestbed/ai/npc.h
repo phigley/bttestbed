@@ -25,22 +25,10 @@ namespace AI
 
         virtual void update(float dt) override;
 
-        template<typename T, typename... Args>
-        void setState(Args&&... args)
-        {
-            currentState = std::unique_ptr<State>{ new T{*this, std::forward<Args>(args)...} };
-        }
-
-        void clearState()
-        {
-            currentState = nullptr;
-        }
-        
     private:
 
         RootBehavior rootBehavior;
-
-        std::unique_ptr<State> currentState;
+        
     };
 }
 

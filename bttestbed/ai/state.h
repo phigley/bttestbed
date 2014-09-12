@@ -9,6 +9,8 @@
 #ifndef bttestbed_npcstate_h
 #define bttestbed_npcstate_h
 
+#include "result.h"
+
 #include "glm/glm.hpp"
 
 namespace AI
@@ -25,7 +27,7 @@ namespace AI
         
         virtual ~State() { }
         
-        virtual void update(float dt) = 0;
+        virtual Result update(float dt) = 0;
         
 
         NPC& getNPC() { return npc; }
@@ -36,21 +38,23 @@ namespace AI
         NPC& npc;
     };
 
-    class MoveAtVelocity : public State
+    class MoveAtVelocityState : public State
     {
     public:
 
-        MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
+        MoveAtVelocityState(NPC& _npc, const glm::vec2& _velocity)
             : State(_npc)
             , velocity(_velocity)
         { }
         
-        virtual void update(float dt) override;
+        virtual Result update(float dt) override;
         
     private :
 
         glm::vec2 velocity;
     };
+    
+    
 }
 
 #endif

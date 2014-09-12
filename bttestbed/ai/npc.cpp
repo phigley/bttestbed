@@ -21,7 +21,4 @@ AI::NPC::NPC()
 void AI::NPC::update(float dt)
 {
     rootBehavior.update(dt);
-
-    if( currentState )
-        currentState->update(dt);
 }

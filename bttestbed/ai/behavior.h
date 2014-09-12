@@ -9,8 +9,13 @@
 #ifndef bttestbed_npcbehavior_h
 #define bttestbed_npcbehavior_h
 
-#include <glm/glm.hpp>
+#include "result.h"
+#include "state.h"
+
+#include "glm/glm.hpp"
 #include <vector>
+#include <memory>
+#include <limits>
 
 namespace AI
 {
@@ -20,12 +25,6 @@ namespace AI
     {
     public:
 
-        enum class Result
-        {
-            Continue,
-            Complete,
-            Fail
-        };
         
         typedef std::shared_ptr<Behavior> Ptr;
         
@@ -57,7 +56,7 @@ namespace AI
         template<typename... Args>
         RootBehavior(Args&&... _children)
             : children{ std::forward<Args>(_children)... }
-            , activeChild{ std::size_t(-1) }
+            , activeChild{ std::numeric_limits<std::size_t>::max() }
         { }
         
         ~RootBehavior();
@@ -109,6 +108,7 @@ namespace AI
 
         glm::vec2 velocity;
 
+        std::unique_ptr<MoveAtVelocityState> state;
     };
 }
 

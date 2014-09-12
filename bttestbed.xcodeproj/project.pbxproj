@@ -275,6 +275,7 @@
 		7214756F19B12399006BCDA8 /* npc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = npc.h; sourceTree = "<group>"; };
 		7214757019B12399006BCDA8 /* state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state.cpp; sourceTree = "<group>"; };
 		7214757119B12399006BCDA8 /* state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = state.h; sourceTree = "<group>"; };
+		7214757519B54BB7006BCDA8 /* result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = result.h; sourceTree = "<group>"; };
 		72DFC68319AFE71E002F3FF3 /* bttestbed */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bttestbed; sourceTree = BUILT_PRODUCTS_DIR; };
 		72DFC68619AFE71E002F3FF3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72DFC68F19AFE7D0002F3FF3 /* sdlapplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdlapplication.cpp; sourceTree = "<group>"; };
@@ -586,6 +587,7 @@
 		7214756B19B12399006BCDA8 /* ai */ = {
 			isa = PBXGroup;
 			children = (
+				7214757519B54BB7006BCDA8 /* result.h */,
 				7214756C19B12399006BCDA8 /* behavior.cpp */,
 				7214756D19B12399006BCDA8 /* behavior.h */,
 				7214756E19B12399006BCDA8 /* npc.cpp */,
@@ -724,6 +726,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/bttestbed";
 			};
 			name = Debug;
 		};
@@ -756,6 +759,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/bttestbed";
 			};
 			name = Release;
 		};
