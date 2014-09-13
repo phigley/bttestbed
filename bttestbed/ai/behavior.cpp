@@ -11,8 +11,9 @@
 #include "npc.h"
 
 using namespace AI;
+using namespace AI::Behavior;
 
-AI::RootBehavior::~RootBehavior()
+Root::~Root()
 {
     if( activeChild < children.size() )
     {
@@ -20,7 +21,7 @@ AI::RootBehavior::~RootBehavior()
     }
 }
 
-void AI::RootBehavior::update(float dt)
+void Root::update(float dt)
 {
     
     for( std::size_t currentChild = 0; currentChild < activeChild; ++currentChild )
@@ -61,40 +62,40 @@ void AI::RootBehavior::update(float dt)
     
 }
 
-Result AI::BehaviorSelector::initialize()
+Result PrioritySelector::initialize()
 {
-    for( auto& child : children )
+    for(std::size_t iChild = 0; iChild < children.size(); ++iChild)
     {
-        const auto result = child->initialize();
+        const auto result = children[iChild]->initialize();
         if( result == Result::Fail )
             continue;
         
-        activeChild = child.get();
+        activeChild = iChild;
         return result;
     }
     
     return Result::Fail;
 }
 
-Result AI::BehaviorSelector::update(float dt)
+Result PrioritySelector::update(float dt)
 {
-    if( activeChild )
-        return activeChild->update(dt);
+    if( activeChild < children.size())
+        return children[activeChild]->update(dt);
     
     return Result::Fail;
 }
 
-void BehaviorSelector::term()
+void PrioritySelector::term()
 {
-    if( activeChild )
+    if( activeChild < children.size())
     {
-        activeChild->term();
-        activeChild = nullptr;
+        children[activeChild]->term();
+        activeChild = std::numeric_limits<std::size_t>::max();
     }
 }
 
 
-Result AI::MoveAtVelocityBehavior::initialize()
+Result MoveAtVelocity::initialize()
 {
     state = std::unique_ptr<MoveAtVelocityState>(new MoveAtVelocityState(getNPC(), velocity));
     
@@ -104,7 +105,7 @@ Result AI::MoveAtVelocityBehavior::initialize()
     return Result::Continue;
 }
 
-Result AI::MoveAtVelocityBehavior::update(float dt)
+Result MoveAtVelocity::update(float dt)
 {
     if( !state )
         return Result::Fail;
@@ -112,7 +113,7 @@ Result AI::MoveAtVelocityBehavior::update(float dt)
     return state->update(dt);
 }
 
-void AI::MoveAtVelocityBehavior::term()
+void MoveAtVelocity::term()
 {
     state = nullptr;
 }

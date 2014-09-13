@@ -15,7 +15,7 @@
 using namespace AI;
 
 AI::NPC::NPC()
-    : rootBehavior{ Behavior::Ptr{new MoveAtVelocityBehavior{ *this, glm::vec2{-0.5, 0.1}} } }
+    : rootBehavior{ Behavior::Base::Ptr{new Behavior::MoveAtVelocity{ *this, glm::vec2{-0.5, 0.1}} } }
 {
 }
 

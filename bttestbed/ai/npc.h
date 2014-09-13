@@ -29,7 +29,7 @@ namespace AI
     private:
 
         Maybe<glm::vec2>    targetPos;
-        RootBehavior        rootBehavior;
+        Behavior::Root      rootBehavior;
         
     };
 }

@@ -21,95 +21,97 @@ namespace AI
 {
     class NPC;
 
-    class Behavior
+    namespace Behavior
     {
-    public:
-
-        
-        typedef std::shared_ptr<Behavior> Ptr;
-        
-    public:
-
-        Behavior(NPC& _npc)
-            : npc{_npc}
-        { }
-        
-        virtual ~Behavior() { }
-
-        virtual Result initialize() { return Result::Continue; }
-        virtual Result update(float dt) { return Result::Continue; }
-        virtual void term() { }
-        
-        NPC& getNPC() { return npc; }
-        const NPC& getNPC() const { return npc; }
-
-    private:
-
-        NPC& npc;
-    };
-
-
-    class RootBehavior
-    {
-    public:
-    
-        template<typename... Args>
-        RootBehavior(Args&&... _children)
-            : children{ std::forward<Args>(_children)... }
-            , activeChild{ std::numeric_limits<std::size_t>::max() }
-        { }
-        
-        ~RootBehavior();
-        
-        void update(float dt);
-        
-    private :
-
-        std::vector<Behavior::Ptr>    children;
-        std::size_t                   activeChild;
-    };
-
-    class BehaviorSelector : public Behavior
-    {
-    public:
-
-        template<typename... Args>
-        BehaviorSelector(NPC& _npc, Args&&... _children)
-            : Behavior{_npc}
-            , children{ std::forward<Args>(_children)... }
+        class Base
         {
-        }
-        
-        virtual Result initialize() override;
-        virtual Result update(float dt) override;
-        virtual void term() override;
-        
-    private :
+        public:
 
-        std::vector<Ptr>    children;
-        Behavior*                activeChild = nullptr;
-    };
+            
+            typedef std::shared_ptr<Base> Ptr;
+            
+        public:
 
-    class MoveAtVelocityBehavior : public Behavior
-    {
-    public:
+            Base(NPC& _npc)
+                : npc{_npc}
+            { }
+            
+            virtual ~Base() { }
 
-        MoveAtVelocityBehavior(NPC& _npc, const glm::vec2& _velocity)
-            : Behavior{_npc}
-            , velocity{_velocity}
+            virtual Result initialize() { return Result::Continue; }
+            virtual Result update(float dt) { return Result::Continue; }
+            virtual void term() { }
+            
+            NPC& getNPC() { return npc; }
+            const NPC& getNPC() const { return npc; }
+
+        private:
+
+            NPC& npc;
+        };
+
+
+        class Root
         {
-        }
+        public:
         
-        virtual Result initialize() override;
-        virtual Result update(float dt) override;
-        virtual void term() override;
+            template<typename... Args>
+            Root(Args&&... _children)
+                : children{ std::forward<Args>(_children)... }
+            { }
+            
+            ~Root();
+            
+            void update(float dt);
+            
+        private :
 
-    private:
+            std::vector<Base::Ptr>    children;
+            std::size_t               activeChild = std::numeric_limits<std::size_t>::max();
+        };
 
-        glm::vec2 velocity;
+        class PrioritySelector : public Base
+        {
+        public:
 
-        std::unique_ptr<MoveAtVelocityState> state;
-    };
+            template<typename... Args>
+            PrioritySelector(NPC& _npc, Args&&... _children)
+                : Base{_npc}
+                , children{ std::forward<Args>(_children)... }
+            {
+            }
+            
+            virtual Result initialize() override;
+            virtual Result update(float dt) override;
+            virtual void term() override;
+            
+        private :
+
+            std::vector<Ptr>    children;
+            std::size_t         activeChild = std::numeric_limits<std::size_t>::max();
+        };
+
+        class MoveAtVelocity : public Base
+        {
+        public:
+
+            MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
+                : Base{_npc}
+                , velocity{_velocity}
+            {
+            }
+            
+            virtual Result initialize() override;
+            virtual Result update(float dt) override;
+            virtual void term() override;
+
+        private:
+
+            glm::vec2 velocity;
+
+            std::unique_ptr<MoveAtVelocityState> state;
+        };
+    }
 }
 
 #endif
