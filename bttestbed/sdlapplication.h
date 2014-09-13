@@ -4,15 +4,12 @@
 
 #include <SDL2/SDL.h>
 
-#include <memory>
-#include <vector>
+#include "world.h"
 
 class Entity;
 
 class SdlApplication
 {
-public:
-    typedef std::shared_ptr<Entity> EntityOwnedPtr;
 
 public:
 
@@ -22,14 +19,9 @@ public:
     bool beginFrame();
 	void render();
 
-    template<typename T, typename... Args>
-    std::weak_ptr<T> addEntity(Args&&... args)
-    {
-        auto newEntity = std::make_shared<T>(std::forward<Args>(args)...);
-        entityPtrs.push_back(newEntity);
-        
-        return newEntity;
-    }
+
+    World& getWorld() { return world; }
+    const World& getWorld() const { return world; }
     
 private:
 
@@ -38,11 +30,10 @@ private:
 	
     SdlApplication(const SdlApplication&) = delete;
     SdlApplication& operator=(const SdlApplication&) = delete;
-    
-    
-    std::vector<EntityOwnedPtr> entityPtrs;
-    
+        
     std::uint32_t currentTime = 0;
+    
+    World   world;
     
 	// Whether the application is in event loop.
 	bool quit = false;

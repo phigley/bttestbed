@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "sdlapplication.h"
+#include "world.h"
 #include "ai/npc.h"
 #include "ai/state.h"
 
@@ -17,7 +18,7 @@ int main(int argc, const char * argv[])
 {
 	SdlApplication app{800, 800};
 
-    app.addEntity<AI::NPC>();
+    app.getWorld().addEntity<AI::NPC>();
     
     while( app.beginFrame() )
     {

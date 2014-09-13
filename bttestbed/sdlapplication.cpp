@@ -44,13 +44,10 @@ bool SdlApplication::beginFrame()
     
     const std::uint32_t newTime = SDL_GetTicks();
     
-    const float fDeltaTime = float(newTime - currentTime)*1e-3f;
+    const float deltaTime = float(newTime - currentTime)*1e-3f;
     currentTime = newTime;
     
-    for(auto& entityPtr : entityPtrs)
-    {
-        entityPtr->update(fDeltaTime);
-    }
+    world.update(deltaTime);
     
     return true;
 }
@@ -71,7 +68,7 @@ bool SdlApplication::onEvent(SDL_Event* ev)
 			}
 		}
         break;
-	}
+    }
     
     return true;
 }
@@ -84,13 +81,9 @@ void SdlApplication::render()
 	//
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0, 0xff);
 	SDL_RenderClear(renderer);
-
-    for(auto& entityPtr : entityPtrs)
-    {
-        entityPtr->render(renderer, w, h);
-    }
-
 	
+    world.render(renderer, w, h);
+    
 	SDL_RenderPresent(renderer);
     SDL_Delay(10);
 }
