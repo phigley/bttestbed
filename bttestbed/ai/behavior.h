@@ -109,7 +109,7 @@ namespace AI
 
             glm::vec2 velocity;
 
-            std::unique_ptr<MoveAtVelocityState> state;
+            std::unique_ptr<State::MoveAtVelocity> state;
         };
     }
 }

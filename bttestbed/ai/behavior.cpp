@@ -97,7 +97,7 @@ void PrioritySelector::term()
 
 Result MoveAtVelocity::initialize()
 {
-    state = std::unique_ptr<MoveAtVelocityState>(new MoveAtVelocityState(getNPC(), velocity));
+    state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity(getNPC(), velocity));
     
     if( !state )
         return Result::Fail;

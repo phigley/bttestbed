@@ -17,43 +17,45 @@ namespace AI
 {
     class NPC;
 
-    class State
+    namespace State
     {
-    public:
+        class Base
+        {
+        public:
 
-        State(NPC& _npc)
-            : npc(_npc)
-        { }
-        
-        virtual ~State() { }
-        
-        virtual Result update(float dt) = 0;
-        
+            Base(NPC& _npc)
+                : npc(_npc)
+            { }
+            
+            virtual ~Base() { }
+            
+            virtual Result update(float dt) = 0;
+            
 
-        NPC& getNPC() { return npc; }
-        const NPC& getNPC() const { return npc; }
+            NPC& getNPC() { return npc; }
+            const NPC& getNPC() const { return npc; }
 
-    private:
+        private:
 
-        NPC& npc;
-    };
+            NPC& npc;
+        };
 
-    class MoveAtVelocityState : public State
-    {
-    public:
+        class MoveAtVelocity : public Base
+        {
+        public:
 
-        MoveAtVelocityState(NPC& _npc, const glm::vec2& _velocity)
-            : State(_npc)
-            , velocity(_velocity)
-        { }
-        
-        virtual Result update(float dt) override;
-        
-    private :
+            MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
+                : Base(_npc)
+                , velocity(_velocity)
+            { }
+            
+            virtual Result update(float dt) override;
+            
+        private :
 
-        glm::vec2 velocity;
-    };
-    
+            glm::vec2 velocity;
+        };
+    }
     
 }
 

@@ -10,8 +10,9 @@
 #include "npc.h"
 
 using namespace AI;
+using namespace AI::State;
 
-AI::Result AI::MoveAtVelocityState::update(float dt)
+Result MoveAtVelocity::update(float dt)
 {
     getNPC().moveBy( velocity*dt );
     
