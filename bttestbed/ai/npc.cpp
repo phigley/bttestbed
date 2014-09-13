@@ -8,6 +8,7 @@
 
 #include "npc.h"
 #include "behavior.h"
+#include "world.h"
 
 #include <algorithm>
 
@@ -18,7 +19,9 @@ AI::NPC::NPC()
 {
 }
 
-void AI::NPC::update(float dt)
+void AI::NPC::update(const World& world, float dt)
 {
+    targetPos = world.getTargetPos();
+    
     rootBehavior.update(dt);
 }

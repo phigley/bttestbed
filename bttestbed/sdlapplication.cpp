@@ -68,6 +68,28 @@ bool SdlApplication::onEvent(SDL_Event* ev)
 			}
 		}
         break;
+        
+        case SDL_MOUSEBUTTONDOWN:
+        {
+            if( ev->button.button == SDL_BUTTON_LEFT )
+            {
+                int w,h;
+                SDL_GetWindowSize(win, &w, &h);
+                
+                const auto pos = glm::vec2
+                    { float(ev->button.x)*2.0f/float(w) - 1.0f
+                    , 1.0f - float(ev->button.y)*2.0f/float(h)
+                    };
+                
+                
+                world.setTargetPos(pos);
+            }
+            else if (ev->button.button == SDL_BUTTON_RIGHT)
+            {
+                world.clearTargetPos();
+            }
+        }
+        break;
     }
     
     return true;
@@ -79,7 +101,7 @@ void SdlApplication::render()
 	SDL_GetWindowSize(win, &w, &h);
     
 	//
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0, 0xff);
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
 	SDL_RenderClear(renderer);
 	
     world.render(renderer, w, h);

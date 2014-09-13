@@ -12,6 +12,7 @@
 #include "entity.h"
 #include "state.h"
 #include "behavior.h"
+#include "maybe.h"
 
 #include <memory>
 
@@ -23,11 +24,12 @@ namespace AI
 
         NPC();
 
-        virtual void update(float dt) override;
+        virtual void update(const World& world, float dt) override;
 
     private:
 
-        RootBehavior rootBehavior;
+        Maybe<glm::vec2>    targetPos;
+        RootBehavior        rootBehavior;
         
     };
 }

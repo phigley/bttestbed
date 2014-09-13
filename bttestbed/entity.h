@@ -12,6 +12,7 @@
 #include "glm/glm.hpp"
 
 class SDL_Renderer;
+class World;
 
 class Entity
 {
@@ -21,7 +22,7 @@ public:
     
     virtual ~Entity() { }
     
-    virtual void update(float dt) = 0;
+    virtual void update(const World& world, float dt) = 0;
     
     virtual void render(SDL_Renderer*, int windowWidth, int windowHeight);
     

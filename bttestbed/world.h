@@ -9,6 +9,9 @@
 #ifndef bttestbed_world_h
 #define bttestbed_world_h
 
+#include "glm/glm.hpp"
+#include "maybe.h"
+
 #include <memory>
 #include <vector>
 
@@ -29,7 +32,10 @@ public:
 
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight);
 
-
+    void setTargetPos(const glm::vec2& newPosition) { targetPos = newPosition; }
+    void clearTargetPos()                           { targetPos = Maybe<glm::vec2>{}; }
+    const Maybe<glm::vec2>& getTargetPos() const    { return targetPos; }
+    
     template<typename T, typename... Args>
     std::weak_ptr<T> addEntity(Args&&... args)
     {
@@ -43,6 +49,8 @@ public:
 private:
 
     EntityContainer entityPtrs;
+    
+    Maybe<glm::vec2> targetPos;
 
 };
 
