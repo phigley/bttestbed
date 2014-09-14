@@ -18,7 +18,10 @@ using namespace AI;
 NPC::NPC()
     : rootBehavior
        { *this
-        , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
+        , std::make_shared<Behavior::Sequence>(*this
+            , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
+            , std::make_shared<Behavior::Wait>(*this, 1.0f)
+            )
         , std::make_shared<Behavior::MoveAtVelocity>(*this, glm::vec2{0.5f, 0.25f})
         }
 {

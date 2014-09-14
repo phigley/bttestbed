@@ -38,8 +38,13 @@ namespace AI
             
             virtual ~Base() { }
 
+            // Called to set-up the behavior.
             virtual Result initialize() { return Result::Continue; }
+            
+            // Called if initialize returned Result::Continue.
             virtual Result update(float dt) { return Result::Continue; }
+            
+            // Called if and only if initialize returned Result::Continue.
             virtual void term() { }
             
             NPC& getNPC() { return npc; }
@@ -69,6 +74,30 @@ namespace AI
 
             std::vector<Ptr>    children;
             std::size_t         activeChild = std::numeric_limits<std::size_t>::max();
+        };
+
+
+        class Sequence : public Base
+        {
+        public:
+            template<typename... Args>
+            Sequence(NPC& _npc, Args&&... _children)
+                : Base{_npc}
+                , children{ std::forward<Args>(_children)... }
+            {
+            }
+        
+            virtual Result initialize() override;
+            virtual Result update(float dt) override;
+            virtual void term() override;
+            
+        private :
+
+            Result initializeNextChild();
+
+            std::vector<Ptr>    children;
+            std::size_t         activeChild = std::numeric_limits<std::size_t>::max();
+            
         };
 
         class MoveAtVelocity : public Base

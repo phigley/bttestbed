@@ -73,6 +73,67 @@ void Priority::term()
 }
 
 
+Result Sequence::initialize()
+{
+    activeChild = 0;
+    return initializeNextChild();
+}
+
+Result Sequence::update(float dt)
+{
+    if( activeChild < children.size() )
+    {
+        const auto updateResult = children[activeChild]->update(dt);
+    
+        switch(updateResult)
+        {
+            case Result::Continue:
+                return Result::Continue;
+            
+            case Result::Fail:
+                children[activeChild]->term();
+                return Result::Fail;
+                
+            case Result::Complete:
+            {
+                children[activeChild]->term();
+                
+                ++activeChild;
+                return initializeNextChild();
+            }
+        }
+        
+        
+        return updateResult;
+    }
+    
+    return Result::Fail;
+}
+
+Result Sequence::initializeNextChild()
+{
+    while( activeChild < children.size() )
+    {
+        const auto initializeResult = children[activeChild]->initialize();
+        
+        if( initializeResult != Result::Complete )
+            return initializeResult;
+
+        activeChild += 1;
+    }
+
+    return Result::Complete;
+}
+
+void Sequence::term()
+{
+    if( activeChild < children.size())
+    {
+        children[activeChild]->term();
+    }
+}
+
+
 Result MoveAtVelocity::initialize()
 {
     state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});
