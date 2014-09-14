@@ -30,8 +30,8 @@ namespace AI
 
     private:
 
-        Maybe<glm::vec2>                targetPos;
-        Behavior::PrioritySelector      rootBehavior;
+        Maybe<glm::vec2>        targetPos;
+        Behavior::Priority      rootBehavior;
         
     };
 }

@@ -50,12 +50,12 @@ namespace AI
             NPC& npc;
         };
 
-        class PrioritySelector : public Base
+        class Priority : public Base
         {
         public:
 
             template<typename... Args>
-            PrioritySelector(NPC& _npc, Args&&... _children)
+            Priority(NPC& _npc, Args&&... _children)
                 : Base{_npc}
                 , children{ std::forward<Args>(_children)... }
             {

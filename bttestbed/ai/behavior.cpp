@@ -13,7 +13,7 @@
 using namespace AI;
 using namespace AI::Behavior;
 
-Result PrioritySelector::initialize()
+Result Priority::initialize()
 {
     assert(activeChild >= children.size());
     
@@ -30,7 +30,7 @@ Result PrioritySelector::initialize()
     return Result::Fail;
 }
 
-Result PrioritySelector::update(float dt)
+Result Priority::update(float dt)
 {
     for( std::size_t currentChild = 0; currentChild < activeChild && currentChild < children.size(); ++currentChild )
     {
@@ -64,7 +64,7 @@ Result PrioritySelector::update(float dt)
     return Result::Fail;
 }
 
-void PrioritySelector::term()
+void Priority::term()
 {
     if( activeChild < children.size())
     {
