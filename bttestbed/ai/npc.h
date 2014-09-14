@@ -28,9 +28,12 @@ namespace AI
 
         const Maybe<glm::vec2>& getTargetPos() const { return targetPos; }
 
+        void clearTarget();
+        
     private:
 
         Maybe<glm::vec2>        targetPos;
+        Maybe<glm::vec2>        oldTargetPos;
         Behavior::Priority      rootBehavior;
         
     };

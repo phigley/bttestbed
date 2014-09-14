@@ -18,9 +18,12 @@ using namespace AI;
 NPC::NPC()
     : rootBehavior
        { *this
-        , std::make_shared<Behavior::Sequence>(*this
-            , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
-            , std::make_shared<Behavior::Wait>(*this, 1.0f)
+        , std::make_shared<Behavior::HasTarget>(*this
+            , std::make_shared<Behavior::Sequence>(*this
+                , std::make_shared<Behavior::Wait>(*this, 1.0f)
+                , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
+                , std::make_shared<Behavior::ClearTarget>(*this)
+                )
             )
         , std::make_shared<Behavior::MoveAtVelocity>(*this, glm::vec2{0.5f, 0.25f})
         }
@@ -29,7 +32,16 @@ NPC::NPC()
 
 void NPC::update(const World& world, float dt)
 {
-    targetPos = world.getTargetPos();
+    if( world.getTargetPos() != oldTargetPos )
+    {
+        targetPos = world.getTargetPos();
+        oldTargetPos = world.getTargetPos();
+    }
     
     rootBehavior.update(dt);
+}
+
+void NPC::clearTarget()
+{
+    targetPos = Maybe<glm::vec2>{};
 }

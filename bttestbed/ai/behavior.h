@@ -100,6 +100,24 @@ namespace AI
             
         };
 
+        class HasTarget : public Base
+        {
+        public:
+        
+            HasTarget(NPC& _npc, Ptr&& _child)
+                : Base{_npc}
+                , child(_child)
+            { }
+            
+            virtual Result initialize() override;
+            virtual Result update(float dt) override { return child->update(dt); }
+            virtual void term() override { child->term(); }
+            
+        private:
+        
+            Ptr child;
+        };
+
         class MoveAtVelocity : public Base
         {
         public:
@@ -161,6 +179,17 @@ namespace AI
             float duration;
             
             float timeRemaining = 0.0f;
+        };
+        
+        class ClearTarget : public Base
+        {
+        public:
+        
+            ClearTarget(NPC& _npc)
+                : Base{_npc}
+            { }
+            
+            virtual Result initialize() override;
         };
     }
 }

@@ -55,6 +55,34 @@ public:
     T* operator->() { assert(valid); return &value; }
     const T* operator->() const { assert(valid); return &value; }
     
+    friend bool operator==(const Maybe& lhs, const Maybe& rhs)
+    {
+        // Valids don't match.
+        if( lhs.valid != rhs.valid )
+            return false;
+        
+        // Both valids are false
+        if( !lhs.valid )
+            return true;
+        
+        // Compare values.
+        return lhs.value == rhs.value;
+    }
+    
+    friend bool operator!=(const Maybe& lhs, const Maybe& rhs)
+    {
+        // Valids don't match.
+        if( lhs.valid != rhs.valid )
+            return true;
+        
+        // Both valids are false
+        if( !lhs.valid )
+            return false;
+        
+        // Compare values.
+        return lhs.value != rhs.value;
+    }
+    
 private:
 
     T       value;

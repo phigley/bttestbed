@@ -133,6 +133,13 @@ void Sequence::term()
     }
 }
 
+Result HasTarget::initialize()
+{
+    if( getNPC().getTargetPos() )
+        return child->initialize();
+    
+    return Result::Fail;
+}
 
 Result MoveAtVelocity::initialize()
 {
@@ -216,4 +223,8 @@ Result Wait::update(float dt)
     return Result::Continue;
 }
 
-
+Result ClearTarget::initialize()
+{
+    getNPC().clearTarget();
+    return Result::Complete;
+}
