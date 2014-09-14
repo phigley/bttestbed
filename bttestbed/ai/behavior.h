@@ -50,26 +50,6 @@ namespace AI
             NPC& npc;
         };
 
-
-        class Root
-        {
-        public:
-        
-            template<typename... Args>
-            Root(Args&&... _children)
-                : children{ std::forward<Args>(_children)... }
-            { }
-            
-            ~Root();
-            
-            void update(float dt);
-            
-        private :
-
-            std::vector<Base::Ptr>    children;
-            std::size_t               activeChild = std::numeric_limits<std::size_t>::max();
-        };
-
         class PrioritySelector : public Base
         {
         public:

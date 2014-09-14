@@ -14,6 +14,8 @@
 class SDL_Renderer;
 class World;
 
+// PLH NOTE : This class is premature generalization.  Feel free to remove it and deal with derived types directly!
+
 class Entity
 {
 public:

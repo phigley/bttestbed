@@ -11,15 +11,20 @@
 #include "world.h"
 
 #include <algorithm>
+#include <memory>
 
 using namespace AI;
 
-AI::NPC::NPC()
-    : rootBehavior{ Behavior::Base::Ptr{new Behavior::MoveTowardTarget{ *this, 0.75, 0.01} } }
+NPC::NPC()
+    : rootBehavior
+       { *this
+        , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
+        , std::make_shared<Behavior::MoveAtVelocity>(*this, glm::vec2{0.5f, 0.25f})
+        }
 {
 }
 
-void AI::NPC::update(const World& world, float dt)
+void NPC::update(const World& world, float dt)
 {
     targetPos = world.getTargetPos();
     
