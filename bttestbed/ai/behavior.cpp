@@ -134,3 +134,25 @@ void MoveTowardTarget::term()
 {
     state = nullptr;
 }
+
+Result Wait::initialize()
+{
+    if( duration <= 0.0f )
+        return Result::Complete;
+    
+    timeRemaining = duration;
+    return Result::Continue;
+}
+
+
+Result Wait::update(float dt)
+{
+    timeRemaining -= dt;
+    
+    if( timeRemaining <= 0.0f )
+        return Result::Complete;
+    
+    return Result::Continue;
+}
+
+

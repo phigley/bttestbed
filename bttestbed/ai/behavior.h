@@ -114,6 +114,25 @@ namespace AI
             
             std::unique_ptr<State::MoveTowardTarget> state;
         };
+        
+        class Wait : public Base
+        {
+        public:
+        
+            Wait(NPC& _npc, float _duration)
+                : Base{_npc}
+                , duration{_duration}
+            { }
+            
+            virtual Result initialize() override;
+            virtual Result update(float dt) override;
+
+        private:
+        
+            float duration;
+            
+            float timeRemaining = 0.0f;
+        };
     }
 }
 
