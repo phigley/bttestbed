@@ -42,7 +42,6 @@ Result Priority::update(float dt)
                 children[activeChild]->term();
             }
             
-            dt = 0.0f;
             activeChild = currentChild;
             break;
         }
