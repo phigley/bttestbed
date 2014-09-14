@@ -35,7 +35,7 @@ Result Priority::update(float dt)
     for( std::size_t currentChild = 0; currentChild < activeChild && currentChild < children.size(); ++currentChild )
     {
         const auto initializeResult = children[currentChild]->initialize();
-        if( initializeResult != Result::Fail )
+        if( initializeResult == Result::Continue )
         {
             if( activeChild < children.size() )
             {
@@ -101,7 +101,20 @@ Result MoveTowardTarget::initialize()
 {
     if( !getNPC().getTargetPos())
         return Result::Fail;
-        
+    
+    const auto targetDistance = glm::distance(*getNPC().getTargetPos(), getNPC().getPos());
+
+    if( speed > 0.0f )
+    {
+        if( targetDistance <= desiredRange )
+            return Result::Complete;
+    }
+    else
+    {
+        if( targetDistance >= desiredRange )
+            return Result::Complete;
+    }
+    
     state = std::unique_ptr<State::MoveTowardTarget>(new State::MoveTowardTarget{getNPC(), speed, desiredRange});
     
     if( !state )
