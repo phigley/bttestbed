@@ -26,6 +26,8 @@ namespace AI
 
         virtual void update(const World& world, float dt) override;
 
+        const Maybe<glm::vec2>& getTargetPos() const { return targetPos; }
+
     private:
 
         Maybe<glm::vec2>    targetPos;

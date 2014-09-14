@@ -24,7 +24,7 @@ Root::~Root()
 void Root::update(float dt)
 {
     
-    for( std::size_t currentChild = 0; currentChild < activeChild; ++currentChild )
+    for( std::size_t currentChild = 0; currentChild < activeChild && currentChild < children.size(); ++currentChild )
     {
         const auto initializeResult = children[currentChild]->initialize();
         if( initializeResult != Result::Fail )
@@ -97,7 +97,7 @@ void PrioritySelector::term()
 
 Result MoveAtVelocity::initialize()
 {
-    state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity(getNPC(), velocity));
+    state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});
     
     if( !state )
         return Result::Fail;
@@ -114,6 +114,32 @@ Result MoveAtVelocity::update(float dt)
 }
 
 void MoveAtVelocity::term()
+{
+    state = nullptr;
+}
+
+Result MoveTowardTarget::initialize()
+{
+    if( !getNPC().getTargetPos())
+        return Result::Fail;
+        
+    state = std::unique_ptr<State::MoveTowardTarget>(new State::MoveTowardTarget{getNPC(), speed, desiredRange});
+    
+    if( !state )
+        return Result::Fail;
+    
+    return Result::Continue;
+}
+
+Result MoveTowardTarget::update(float dt)
+{
+    if( !state )
+        return Result::Fail;
+
+    return state->update(dt);
+}
+
+void MoveTowardTarget::term()
 {
     state = nullptr;
 }

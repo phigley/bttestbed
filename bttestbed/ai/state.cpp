@@ -18,3 +18,35 @@ Result MoveAtVelocity::update(float dt)
     
     return Result::Continue;
 }
+
+
+Result MoveTowardTarget::update(float dt)
+{
+    const auto& targetPos = getNPC().getTargetPos();
+    if( !targetPos )
+        return Result::Fail;
+    
+    const auto deltaPos = *targetPos - getNPC().getPos();
+    const auto deltaDistance = glm::length(deltaPos);
+    
+    if( speed > 0.0f )
+    {
+        if( deltaDistance <= desiredRange )
+            return Result::Complete;
+    }
+    else
+    {
+        if( deltaDistance >= desiredRange )
+            return Result::Complete;
+    }
+    
+    const auto scaleAmount = deltaDistance > speed*dt
+        ? speed*dt/deltaDistance
+        : 1.0f;
+    
+    const auto moveAmount = deltaPos * scaleAmount;
+    
+    getNPC().moveBy( moveAmount );
+    
+    return Result::Continue;
+}

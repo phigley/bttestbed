@@ -13,6 +13,8 @@
 
 #include "glm/glm.hpp"
 
+#include <algorithm>
+
 namespace AI
 {
     class NPC;
@@ -24,7 +26,7 @@ namespace AI
         public:
 
             Base(NPC& _npc)
-                : npc(_npc)
+                : npc{_npc}
             { }
             
             virtual ~Base() { }
@@ -45,8 +47,8 @@ namespace AI
         public:
 
             MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
-                : Base(_npc)
-                , velocity(_velocity)
+                : Base{_npc}
+                , velocity{_velocity}
             { }
             
             virtual Result update(float dt) override;
@@ -54,6 +56,24 @@ namespace AI
         private :
 
             glm::vec2 velocity;
+        };
+        
+        class MoveTowardTarget : public Base
+        {
+        public:
+        
+            MoveTowardTarget(NPC& _npc, float _speed, float _desiredRange)
+                : Base{_npc}
+                , speed{_speed}
+                , desiredRange{ std::max(_desiredRange, 0.0f) }
+            { }
+            
+            virtual Result update(float dt) override;
+
+        private :
+
+            float       speed;
+            float       desiredRange;
         };
     }
     

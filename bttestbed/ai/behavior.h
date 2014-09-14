@@ -111,6 +111,29 @@ namespace AI
 
             std::unique_ptr<State::MoveAtVelocity> state;
         };
+        
+        class MoveTowardTarget : public Base
+        {
+        public:
+        
+            MoveTowardTarget(NPC& _npc, float _speed, float _desiredRange)
+                : Base{_npc}
+                , speed{_speed}
+                , desiredRange(_desiredRange)
+            {
+            }
+
+            virtual Result initialize() override;
+            virtual Result update(float dt) override;
+            virtual void term() override;
+            
+        private:
+        
+            float   speed;
+            float   desiredRange;
+            
+            std::unique_ptr<State::MoveTowardTarget> state;
+        };
     }
 }
 

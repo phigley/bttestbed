@@ -23,8 +23,9 @@ public:
     virtual ~Entity() { }
     
     virtual void update(const World& world, float dt) = 0;
-    
     virtual void render(SDL_Renderer*, int windowWidth, int windowHeight);
+
+    const glm::vec2& getPos() const { return currentPos; }
     
     void moveTo(const glm::vec2& newPos);
     void moveBy(const glm::vec2& deltaPos);
