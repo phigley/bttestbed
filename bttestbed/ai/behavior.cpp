@@ -228,3 +228,31 @@ Result ClearTarget::initialize()
     getNPC().clearTarget();
     return Result::Complete;
 }
+
+
+Result LockTarget::initialize()
+{
+    return child->initialize();
+}
+
+Result LockTarget::update(float dt)
+{
+    if( !appliedLock )
+    {
+        getNPC().lockTarget();
+        appliedLock = true;
+    }
+    
+    return child->update(dt);
+}
+
+void LockTarget::term()
+{
+    child->term();
+    
+    if( appliedLock )
+    {
+        getNPC().unlockTarget();
+        appliedLock = false;
+    }
+}

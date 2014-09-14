@@ -30,10 +30,14 @@ namespace AI
 
         void clearTarget();
         
+        void lockTarget();
+        void unlockTarget();
+        
     private:
 
         Maybe<glm::vec2>        targetPos;
         Maybe<glm::vec2>        oldTargetPos;
+        bool                    canChangeTarget = true;
         Behavior::Priority      rootBehavior;
         
     };

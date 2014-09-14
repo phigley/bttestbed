@@ -191,6 +191,25 @@ namespace AI
             
             virtual Result initialize() override;
         };
+        
+        class LockTarget : public Base
+        {
+        public:
+            LockTarget(NPC& npc_, Ptr&& child_)
+                : Base{npc_}
+                , child{child_}
+            { }
+
+            virtual Result initialize() override;
+            virtual Result update(float dt) override;
+            virtual void term() override;
+            
+        private:
+        
+            bool    appliedLock = false;
+            Ptr     child;
+        
+        };
     }
 }
 

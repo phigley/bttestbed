@@ -19,10 +19,12 @@ NPC::NPC()
     : rootBehavior
        { *this
         , std::make_shared<Behavior::HasTarget>(*this
-            , std::make_shared<Behavior::Sequence>(*this
-                , std::make_shared<Behavior::Wait>(*this, 1.0f)
-                , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
-                , std::make_shared<Behavior::ClearTarget>(*this)
+            , std::make_shared<Behavior::LockTarget>(*this
+                , std::make_shared<Behavior::Sequence>(*this
+                    , std::make_shared<Behavior::Wait>(*this, 1.0f)
+                    , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
+                    , std::make_shared<Behavior::ClearTarget>(*this)
+                    )
                 )
             )
         , std::make_shared<Behavior::MoveAtVelocity>(*this, glm::vec2{0.5f, 0.25f})
@@ -32,7 +34,7 @@ NPC::NPC()
 
 void NPC::update(const World& world, float dt)
 {
-    if( world.getTargetPos() != oldTargetPos )
+    if( canChangeTarget && world.getTargetPos() != oldTargetPos )
     {
         targetPos = world.getTargetPos();
         oldTargetPos = world.getTargetPos();
@@ -45,3 +47,14 @@ void NPC::clearTarget()
 {
     targetPos = Maybe<glm::vec2>{};
 }
+
+void NPC::lockTarget()
+{
+    canChangeTarget = false;
+}
+
+void NPC::unlockTarget()
+{
+    canChangeTarget = true;
+}
+
