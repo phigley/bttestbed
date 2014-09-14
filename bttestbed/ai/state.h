@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Peter Higley. All rights reserved.
 //
 
-#ifndef bttestbed_npcstate_h
-#define bttestbed_npcstate_h
+#ifndef bttestbednpc_state_h
+#define bttestbednpc_state_h
 
 #include "result.h"
 
@@ -25,8 +25,8 @@ namespace AI
         {
         public:
 
-            Base(NPC& _npc)
-                : npc{_npc}
+            Base(NPC& npc_)
+                : npc{npc_}
             { }
             
             virtual ~Base() { }
@@ -46,9 +46,9 @@ namespace AI
         {
         public:
 
-            MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
-                : Base{_npc}
-                , velocity{_velocity}
+            MoveAtVelocity(NPC& npc_, const glm::vec2& velocity_)
+                : Base{npc_}
+                , velocity{velocity_}
             { }
             
             virtual Result update(float dt) override;
@@ -62,10 +62,10 @@ namespace AI
         {
         public:
         
-            MoveTowardTarget(NPC& _npc, float _speed, float _desiredRange)
-                : Base{_npc}
-                , speed{_speed}
-                , desiredRange{ std::max(_desiredRange, 0.0f) }
+            MoveTowardTarget(NPC& npc_, float speed_, float desiredRange_)
+                : Base{npc_}
+                , speed{speed_}
+                , desiredRange{ std::max(desiredRange_, 0.0f) }
             { }
             
             virtual Result update(float dt) override;

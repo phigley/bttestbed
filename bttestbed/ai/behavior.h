@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Peter Higley. All rights reserved.
 //
 
-#ifndef bttestbed_npcbehavior_h
-#define bttestbed_npcbehavior_h
+#ifndef bttestbednpc_behavior_h
+#define bttestbednpc_behavior_h
 
 #include "result.h"
 #include "state.h"
@@ -32,8 +32,8 @@ namespace AI
             
         public:
 
-            Base(NPC& _npc)
-                : npc{_npc}
+            Base(NPC& npc_)
+                : npc{npc_}
             { }
             
             virtual ~Base() { }
@@ -60,9 +60,9 @@ namespace AI
         public:
 
             template<typename... Args>
-            Priority(NPC& _npc, Args&&... _children)
-                : Base{_npc}
-                , children{ std::forward<Args>(_children)... }
+            Priority(NPC& npc_, Args&&... children_)
+                : Base{npc_}
+                , children{ std::forward<Args>(children_)... }
             {
             }
             
@@ -81,9 +81,9 @@ namespace AI
         {
         public:
             template<typename... Args>
-            Sequence(NPC& _npc, Args&&... _children)
-                : Base{_npc}
-                , children{ std::forward<Args>(_children)... }
+            Sequence(NPC& npc_, Args&&... children_)
+                : Base{npc_}
+                , children{ std::forward<Args>(children_)... }
             {
             }
         
@@ -104,9 +104,9 @@ namespace AI
         {
         public:
         
-            HasTarget(NPC& _npc, Ptr&& _child)
-                : Base{_npc}
-                , child(_child)
+            HasTarget(NPC& npc_, Ptr&& child_)
+                : Base{npc_}
+                , child(child_)
             { }
             
             virtual Result initialize() override;
@@ -122,9 +122,9 @@ namespace AI
         {
         public:
 
-            MoveAtVelocity(NPC& _npc, const glm::vec2& _velocity)
-                : Base{_npc}
-                , velocity{_velocity}
+            MoveAtVelocity(NPC& npc_, const glm::vec2& velocity_)
+                : Base{npc_}
+                , velocity{velocity_}
             {
             }
             
@@ -143,10 +143,10 @@ namespace AI
         {
         public:
         
-            MoveTowardTarget(NPC& _npc, float _speed, float _desiredRange)
-                : Base{_npc}
-                , speed{_speed}
-                , desiredRange(_desiredRange)
+            MoveTowardTarget(NPC& npc_, float speed_, float desiredRange_)
+                : Base{npc_}
+                , speed{speed_}
+                , desiredRange(desiredRange_)
             {
             }
 
@@ -166,9 +166,9 @@ namespace AI
         {
         public:
         
-            Wait(NPC& _npc, float _duration)
-                : Base{_npc}
-                , duration{_duration}
+            Wait(NPC& npc_, float duration_)
+                : Base{npc_}
+                , duration{duration_}
             { }
             
             virtual Result initialize() override;
@@ -185,8 +185,8 @@ namespace AI
         {
         public:
         
-            ClearTarget(NPC& _npc)
-                : Base{_npc}
+            ClearTarget(NPC& npc_)
+                : Base{npc_}
             { }
             
             virtual Result initialize() override;

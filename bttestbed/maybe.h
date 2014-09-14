@@ -22,13 +22,13 @@ public:
         : valid{false}
     { }
     
-    Maybe(T&& _value)
-        : value{std::forward(_value)}
+    Maybe(T&& value_)
+        : value{std::forward(value_)}
         , valid(true)
     { }
     
-    Maybe(const T& _value)
-        : value(_value)
+    Maybe(const T& value_)
+        : value{value_}
         , valid{true}
     {
     }
