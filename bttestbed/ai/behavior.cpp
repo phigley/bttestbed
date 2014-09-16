@@ -141,6 +141,14 @@ Result HasTarget::initialize()
     return Result::Fail;
 }
 
+Result HasTarget::update(float dt)
+{
+    if( getNPC().getTargetPos() )
+        return child->update(dt);
+    
+    return Result::Fail;
+}
+
 Result MoveAtVelocity::initialize()
 {
     state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});

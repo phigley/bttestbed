@@ -110,7 +110,7 @@ namespace AI
             { }
             
             virtual Result initialize() override;
-            virtual Result update(float dt) override { return child->update(dt); }
+            virtual Result update(float dt) override;
             virtual void term() override { child->term(); }
             
         private:
