@@ -32,14 +32,15 @@ namespace AI
             
         public:
 
-            Base(NPC& npc_)
+            Base(NPC& npc_, bool requiresUpdate_)
                 : npc{npc_}
+                , requiresUpdate{requiresUpdate_}
             { }
             
             virtual ~Base() { }
 
             // Called to set-up the behavior.
-            virtual Result initialize() { return Result::Continue; }
+            virtual Result initialize(std::vector<Base::Ptr>&) { return Result::Continue; }
             
             // Called if initialize returned Result::Continue.
             virtual Result update(float dt) { return Result::Continue; }
@@ -47,33 +48,59 @@ namespace AI
             // Called if and only if initialize returned Result::Continue.
             virtual void term() { }
             
+            virtual Result onChildFailed(std::vector<Base::Ptr>&)      { return Result::Fail; }
+            virtual Result onChildCompleted(std::vector<Base::Ptr>&)   { return Result::Complete; }
+            
             NPC& getNPC() { return npc; }
             const NPC& getNPC() const { return npc; }
 
+            bool getRequiresUpdate() const { return requiresUpdate; }
+
         private:
 
-            NPC& npc;
+            NPC&    npc;
+            bool    requiresUpdate;
         };
 
+        typedef std::vector<Base::Ptr> ActiveList;
+
+        class Root
+        {
+        public:
+
+            template<typename... Args>
+            Root(NPC& npc_, Args&&... children_)
+                : npc{npc_}
+                , children{ std::forward<Args>(children_)... }
+            {
+            }
+            
+            void update(float dt);
+            
+        private :
+        
+            NPC&                    npc;
+            std::vector<Base::Ptr>  children;
+            ActiveList              activePath;
+            
+        };
+        
         class Priority : public Base
         {
         public:
 
             template<typename... Args>
             Priority(NPC& npc_, Args&&... children_)
-                : Base{npc_}
+                : Base{npc_, false}
                 , children{ std::forward<Args>(children_)... }
             {
             }
             
-            virtual Result initialize() override;
-            virtual Result update(float dt) override;
-            virtual void term() override;
+            virtual Result initialize(ActiveList&) override;
             
         private :
 
             std::vector<Ptr>    children;
-            std::size_t         activeChild = std::numeric_limits<std::size_t>::max();
         };
 
 
@@ -82,18 +109,17 @@ namespace AI
         public:
             template<typename... Args>
             Sequence(NPC& npc_, Args&&... children_)
-                : Base{npc_}
+                : Base{npc_, false}
                 , children{ std::forward<Args>(children_)... }
             {
             }
         
-            virtual Result initialize() override;
-            virtual Result update(float dt) override;
-            virtual void term() override;
-            
+            virtual Result initialize(ActiveList&) override;
+            virtual Result onChildCompleted(ActiveList&) override;
+                        
         private :
 
-            Result initializeNextChild();
+            Result initializeNextChild(ActiveList& activeList);
 
             std::vector<Ptr>    children;
             std::size_t         activeChild = std::numeric_limits<std::size_t>::max();
@@ -105,13 +131,12 @@ namespace AI
         public:
         
             HasTarget(NPC& npc_, Ptr&& child_)
-                : Base{npc_}
+                : Base{npc_, true}
                 , child(child_)
             { }
             
-            virtual Result initialize() override;
+            virtual Result initialize(ActiveList&) override;
             virtual Result update(float dt) override;
-            virtual void term() override { child->term(); }
             
         private:
         
@@ -123,12 +148,12 @@ namespace AI
         public:
 
             MoveAtVelocity(NPC& npc_, const glm::vec2& velocity_)
-                : Base{npc_}
+                : Base{npc_, true}
                 , velocity{velocity_}
             {
             }
             
-            virtual Result initialize() override;
+            virtual Result initialize(ActiveList&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
 
@@ -144,13 +169,13 @@ namespace AI
         public:
         
             MoveTowardTarget(NPC& npc_, float speed_, float desiredRange_)
-                : Base{npc_}
+                : Base{npc_, true}
                 , speed{speed_}
                 , desiredRange(desiredRange_)
             {
             }
 
-            virtual Result initialize() override;
+            virtual Result initialize(ActiveList&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
             
@@ -167,11 +192,11 @@ namespace AI
         public:
         
             Wait(NPC& npc_, float duration_)
-                : Base{npc_}
+                : Base{npc_, true}
                 , duration{duration_}
             { }
             
-            virtual Result initialize() override;
+            virtual Result initialize(ActiveList&) override;
             virtual Result update(float dt) override;
 
         private:
@@ -186,22 +211,21 @@ namespace AI
         public:
         
             ClearTarget(NPC& npc_)
-                : Base{npc_}
+                : Base{npc_, false}
             { }
             
-            virtual Result initialize() override;
+            virtual Result initialize(ActiveList&) override;
         };
         
         class LockTarget : public Base
         {
         public:
             LockTarget(NPC& npc_, Ptr&& child_)
-                : Base{npc_}
+                : Base{npc_, false}
                 , child{child_}
             { }
 
-            virtual Result initialize() override;
-            virtual Result update(float dt) override;
+            virtual Result initialize(ActiveList&) override;
             virtual void term() override;
             
         private:

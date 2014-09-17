@@ -38,8 +38,7 @@ namespace AI
         Maybe<glm::vec2>        targetPos;
         Maybe<glm::vec2>        oldTargetPos;
         bool                    canChangeTarget = true;
-        Behavior::Priority      rootBehavior;
-        
+        Behavior::Root          rootBehavior;
     };
 }
 
