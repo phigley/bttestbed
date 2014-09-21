@@ -34,24 +34,24 @@ namespace
 
         const std::size_t parentIndex = currentIndex - 1;
         
-        ActiveList reversedPath;
+        ActiveList pendingPath;
         const auto parentResult = result == Result::Complete
-            ? activePath[parentIndex]->onChildCompleted(reversedPath)
-            : activePath[parentIndex]->onChildFailed(reversedPath);
+            ? activePath[parentIndex]->onChildCompleted(pendingPath)
+            : activePath[parentIndex]->onChildFailed(pendingPath);
 
         if( parentResult == Result::Continue )
         {
-            while( !reversedPath.empty() )
+            while( !pendingPath.empty() )
             {
-                activePath.push_back(reversedPath.back());
-                reversedPath.pop_back();
+                activePath.push_back(pendingPath.back());
+                pendingPath.pop_back();
             }
             
             // Increment past the end of the activeBehaviors to exit the loop.
             return activePath.size();
         }
         
-        assert( reversedPath.empty() );
+        assert( pendingPath.empty() );
         
         return handleResult(activePath, parentIndex, parentResult);
     }
@@ -62,12 +62,20 @@ void Root::update(float dt)
 {
     // PLH TODO - Add a delay to these full replans.
     {
+    
         const auto activeChildPtr = activePath.empty() ? nullptr : activePath[0].get();
         
         for( const auto& currentChild : children )
         {
             if( currentChild.get() == activeChildPtr )
+            {
+                // Need to communicate to the children that they may need re-initialized.
+                // This is only needed for Priority nodes.
+                // If the Priority node does change nodes, we need to terminate the remaining active path.
+                // Would it be better to mark this as needing re-initializing and feeding that
+                // to the priority node during the update?
                 break;
+            }
             
             ActiveList pendingPath;
             const auto initializeResult = currentChild->initialize(pendingPath);
@@ -104,6 +112,8 @@ void Root::update(float dt)
         
         while( currentIndex < activePath.size() )
         {
+            // PLH TODO : Store the update flag in active path so that we do not
+            //   dereference a pointer.
             Behavior::Base* currentChild = activePath[currentIndex].get();
             
             if( !currentChild->getRequiresUpdate() )
