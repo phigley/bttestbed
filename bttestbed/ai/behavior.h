@@ -130,8 +130,9 @@ namespace AI
         {
         public:
         
-            HasTarget(NPC& npc_, Ptr&& child_)
+            HasTarget(NPC& npc_, float maxDuration_, Ptr&& child_)
                 : Base{npc_, true}
+                , maxDuration(maxDuration_)
                 , child(child_)
             { }
             
@@ -141,7 +142,9 @@ namespace AI
         private:
         
             Ptr child;
+            float maxDuration;
         };
+        
 
         class MoveAtVelocity : public Base
         {

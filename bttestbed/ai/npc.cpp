@@ -18,14 +18,17 @@ using namespace AI;
 NPC::NPC()
     : rootBehavior
        { *this
-        , std::make_shared<Behavior::HasTarget>(*this
-            , std::make_shared<Behavior::Sequence>(*this
-                , std::make_shared<Behavior::Wait>(*this, 1.0f)
-                , std::make_shared<Behavior::LockTarget>(*this
-                    , std::make_shared<Behavior::Sequence>(*this
-                        , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
-                        , std::make_shared<Behavior::ClearTarget>(*this)
+        , std::make_shared<Behavior::HasTarget>(*this, 0.0f
+            , std::make_shared<Behavior::Priority>(*this
+                , std::make_shared<Behavior::HasTarget>(*this, 1.0f
+                    , std::make_shared<Behavior::MoveTowardTarget>(*this, -0.5f, 10000.0f)
+                    )
+                , std::make_shared<Behavior::Sequence>(*this
+                    , std::make_shared<Behavior::LockTarget>(*this
+                        , std::make_shared<Behavior::Wait>(*this, 2.0f)
                         )
+                    , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
+                    , std::make_shared<Behavior::ClearTarget>(*this)
                     )
                 )
             )
@@ -39,7 +42,12 @@ void NPC::update(const World& world, float dt)
     if( canChangeTarget && world.getTargetPos() != oldTargetPos )
     {
         targetPos = world.getTargetPos();
+        targetDuration = 0.0f;
         oldTargetPos = world.getTargetPos();
+    }
+    else
+    {
+        targetDuration += dt;
     }
     
     rootBehavior.update(dt);
@@ -48,6 +56,7 @@ void NPC::update(const World& world, float dt)
 void NPC::clearTarget()
 {
     targetPos = Maybe<glm::vec2>{};
+    targetDuration = 0.0f;
 }
 
 void NPC::lockTarget()

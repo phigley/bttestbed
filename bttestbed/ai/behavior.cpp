@@ -185,6 +185,9 @@ Result HasTarget::initialize(ActiveList& pendingPath)
     if( !getNPC().getTargetPos() )
         return Result::Fail;
     
+    if( maxDuration > 0.0f && getNPC().getTargetDuration() > maxDuration )
+        return Result::Complete;
+
     const auto initializeResult = child->initialize(pendingPath);
     if( initializeResult == Result::Continue )
         pendingPath.push_back(child);
@@ -196,6 +199,9 @@ Result HasTarget::update(float dt)
 {
     if( !getNPC().getTargetPos() )
         return Result::Fail;
+    
+    if( maxDuration > 0.0f && getNPC().getTargetDuration() > maxDuration )
+        return Result::Complete;
     
     return Result::Continue;
 }

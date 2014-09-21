@@ -27,6 +27,7 @@ namespace AI
         virtual void update(const World& world, float dt) override;
 
         const Maybe<glm::vec2>& getTargetPos() const { return targetPos; }
+        float getTargetDuration() const { return targetDuration; }
 
         void clearTarget();
         
@@ -36,6 +37,7 @@ namespace AI
     private:
 
         Maybe<glm::vec2>        targetPos;
+        float                   targetDuration = 0.0f;
         Maybe<glm::vec2>        oldTargetPos;
         bool                    canChangeTarget = true;
         Behavior::Root          rootBehavior;
