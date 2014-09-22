@@ -23,12 +23,14 @@ namespace AI
 
     namespace Behavior
     {
+
         class Base
         {
         public:
 
             
             typedef std::shared_ptr<Base> Ptr;
+            typedef std::vector<Base*> ActiveList;
             
         public:
 
@@ -40,13 +42,13 @@ namespace AI
             virtual ~Base() { }
 
             // Called to set-up the behavior.
-            virtual Result initialize(std::vector<Base::Ptr>& pendingBehaviors) { return Result::Continue; }
+            virtual Result initialize(ActiveList& pendingBehaviors) { return Result::Continue; }
             
             // Called on the active child during planning updates.
             // childPtr contains a pointer to the behavior's child (so the behavior does not need to track that itself).
             // If pendingBehaviors comes back non-empty, the remaining children will be terminated and replaced with
             // pendingBehaviors.
-            virtual void reinitialize(const Base* childPtr, std::vector<Base::Ptr>& pendingBehaviors) { }
+            virtual void reinitialize(const Base* childPtr, ActiveList& pendingBehaviors) { }
             
             // Called if initialize returned Result::Continue.
             virtual Result update(float dt) { return Result::Continue; }
@@ -54,8 +56,8 @@ namespace AI
             // Called if and only if initialize returned Result::Continue.
             virtual void term() { }
             
-            virtual Result onChildFailed(std::vector<Base::Ptr>&)      { return Result::Fail; }
-            virtual Result onChildCompleted(std::vector<Base::Ptr>&)   { return Result::Complete; }
+            virtual Result onChildFailed(ActiveList&)      { return Result::Fail; }
+            virtual Result onChildCompleted(ActiveList&)   { return Result::Complete; }
             
             NPC& getNPC() { return npc; }
             const NPC& getNPC() const { return npc; }
@@ -67,8 +69,6 @@ namespace AI
             NPC&    npc;
             bool    requiresUpdate;
         };
-
-        typedef std::vector<Base::Ptr> ActiveList;
 
         class Root
         {
@@ -87,7 +87,7 @@ namespace AI
         
             NPC&                    npc;
             std::vector<Base::Ptr>  children;
-            ActiveList              activePath;
+            Base::ActiveList        activePath;
             float                   planningUpdateDuration = 0.0f;
 
         };
@@ -104,7 +104,7 @@ namespace AI
             }
             
             virtual Result initialize(ActiveList&) override;
-            virtual void reinitialize(const Base* childPtr, std::vector<Base::Ptr>& pendingBehaviors) override;
+            virtual void reinitialize(const Base* childPtr, ActiveList& pendingBehaviors) override;
             
         private :
 
@@ -140,8 +140,8 @@ namespace AI
         
             HasTarget(NPC& npc_, float maxDuration_, Ptr&& child_)
                 : Base{npc_, true}
-                , maxDuration(maxDuration_)
-                , child(child_)
+                , maxDuration{maxDuration_}
+                , child{std::forward<Ptr>(child_)}
             { }
             
             virtual Result initialize(ActiveList&) override;
@@ -182,7 +182,7 @@ namespace AI
             MoveTowardTarget(NPC& npc_, float speed_, float desiredRange_)
                 : Base{npc_, true}
                 , speed{speed_}
-                , desiredRange(desiredRange_)
+                , desiredRange{desiredRange_}
             {
             }
 
@@ -233,7 +233,7 @@ namespace AI
         public:
             LockTarget(NPC& npc_, Ptr&& child_)
                 : Base{npc_, false}
-                , child{child_}
+                , child{ std::forward<Ptr>(child_) }
             { }
 
             virtual Result initialize(ActiveList&) override;

@@ -15,7 +15,7 @@ using namespace AI::Behavior;
 
 namespace
 {
-    std::size_t handleResult(ActiveList& activePath, std::size_t currentIndex, Result result)
+    std::size_t handleResult(Base::ActiveList& activePath, std::size_t currentIndex, Result result)
     {
         // Terminate everything below us.
         while( activePath.size() > currentIndex )
@@ -34,7 +34,7 @@ namespace
 
         const std::size_t parentIndex = currentIndex - 1;
         
-        ActiveList pendingPath;
+        Base::ActiveList pendingPath;
         const auto parentResult = result == Result::Complete
             ? activePath[parentIndex]->onChildCompleted(pendingPath)
             : activePath[parentIndex]->onChildFailed(pendingPath);
@@ -67,7 +67,7 @@ void Root::update(float dt)
     {
         planningUpdateDuration = 0.0f;
         
-        const auto activeChildPtr = activePath.empty() ? nullptr : activePath[0].get();
+        const auto activeChildPtr = activePath.empty() ? nullptr : activePath[0];
         
         for( const auto& currentChild : children )
         {
@@ -75,11 +75,11 @@ void Root::update(float dt)
             {
                 for( std::size_t activePathIndex = 0; activePathIndex < activePath.size(); ++activePathIndex )
                 {
-                    ActiveList pendingPath;
+                    Base::ActiveList pendingPath;
                     
                     const auto activeChildIndex = activePathIndex + 1;
                     const auto activeChildPtr = activeChildIndex < activePath.size()
-                        ? activePath[activeChildIndex].get()
+                        ? activePath[activeChildIndex]
                         : nullptr;
                     
                     activePath[activePathIndex]->reinitialize(activeChildPtr, pendingPath);
@@ -110,7 +110,7 @@ void Root::update(float dt)
                 break;
             }
             
-            ActiveList pendingPath;
+            Base::ActiveList pendingPath;
             const auto initializeResult = currentChild->initialize(pendingPath);
             if( initializeResult == Result::Continue )
             {
@@ -122,7 +122,7 @@ void Root::update(float dt)
                 }
                 
                 // Add the current child to the top of the active path.
-                activePath.push_back(currentChild);
+                activePath.push_back(currentChild.get());
                 
                 // Add the rest of the path nodes to the active path.
                 // The search pushed the nodes back in reverse order.
@@ -147,7 +147,7 @@ void Root::update(float dt)
         {
             // PLH TODO : Store the update flag in active path so that we do not
             //   dereference a pointer.
-            Behavior::Base* currentChild = activePath[currentIndex].get();
+            Behavior::Base* currentChild = activePath[currentIndex];
             
             if( !currentChild->getRequiresUpdate() )
             {
@@ -178,7 +178,7 @@ Result Priority::initialize(ActiveList& pendingPath)
         const auto result = children[iChild]->initialize(pendingPath);
         if( result == Result::Continue )
         {
-            pendingPath.push_back(children[iChild]);
+            pendingPath.push_back(children[iChild].get());
             return result;
         }
 
@@ -197,7 +197,7 @@ void Priority::reinitialize(const Base* childPtr, ActiveList& pendingPath)
         const auto result = children[iChild]->initialize(pendingPath);
         if( result == Result::Continue )
         {
-            pendingPath.push_back(children[iChild]);
+            pendingPath.push_back(children[iChild].get());
             return;
         }
 
@@ -227,7 +227,7 @@ Result Sequence::initializeNextChild(ActiveList& pendingPath)
         {
             if( initializeResult == Result::Continue )
             {
-                pendingPath.push_back(children[activeChild]);
+                pendingPath.push_back(children[activeChild].get());
             }
             
             return initializeResult;
@@ -247,7 +247,7 @@ Result HasTarget::initialize(ActiveList& pendingPath)
 
     const auto initializeResult = child->initialize(pendingPath);
     if( initializeResult == Result::Continue )
-        pendingPath.push_back(child);
+        pendingPath.push_back(child.get());
     
     return initializeResult;
 }
@@ -359,7 +359,7 @@ Result LockTarget::initialize(ActiveList& pendingPath)
     if( initializeResult == Result::Continue )
     {
         getNPC().lockTarget();
-        pendingPath.push_back(child);
+        pendingPath.push_back(child.get());
     }
     
     return initializeResult;
