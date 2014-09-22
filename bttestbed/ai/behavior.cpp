@@ -83,7 +83,7 @@ void Root::update(float dt)
                     if( !pendingPath.empty() )
                     {
                         // Term the remaining behaviors on the acive path.
-                        while( activePath.size() > activePathIndex )
+                        while( activePath.size() > activeChildIndex )
                         {
                             activePath.back()->term();
                             activePath.pop_back();

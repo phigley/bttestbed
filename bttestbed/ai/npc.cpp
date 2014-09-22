@@ -20,13 +20,10 @@ NPC::NPC()
        { *this
         , std::make_shared<Behavior::HasTarget>(*this, 0.0f
             , std::make_shared<Behavior::Priority>(*this
-                , std::make_shared<Behavior::HasTarget>(*this, 1.0f
-                    , std::make_shared<Behavior::MoveTowardTarget>(*this, -0.5f, 10000.0f)
+                , std::make_shared<Behavior::HasTarget>(*this, 2.0f
+                    , std::make_shared<Behavior::MoveTowardTarget>(*this, -0.1f, 10000.0f)
                     )
                 , std::make_shared<Behavior::Sequence>(*this
-                    , std::make_shared<Behavior::LockTarget>(*this
-                        , std::make_shared<Behavior::Wait>(*this, 2.0f)
-                        )
                     , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
                     , std::make_shared<Behavior::ClearTarget>(*this)
                     )
