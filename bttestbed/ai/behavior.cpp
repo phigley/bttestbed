@@ -63,17 +63,44 @@ void Root::update(float dt)
     // PLH TODO - Add a delay to these full replans.
     {
     
-        const auto activeChildPtr = activePath.empty() ? nullptr : activePath[0].get();
+        auto activeChildPtr = activePath.empty() ? nullptr : activePath[0].get();
         
         for( const auto& currentChild : children )
         {
             if( currentChild.get() == activeChildPtr )
             {
-                // Need to communicate to the children that they may need re-initialized.
-                // This is only needed for Priority nodes.
-                // If the Priority node does change nodes, we need to terminate the remaining active path.
-                // Would it be better to mark this as needing re-initializing and feeding that
-                // to the priority node during the update?
+                for( std::size_t activePathIndex = 0; activePathIndex < activePath.size(); ++activePathIndex )
+                {
+                    ActiveList pendingPath;
+                    
+                    const auto activeChildIndex = activePathIndex + 1;
+                    const auto activeChildPtr = activeChildIndex < activePath.size()
+                        ? activePath[activeChildIndex].get()
+                        : nullptr;
+                    
+                    activePath[activePathIndex]->reinitialize(activeChildPtr, pendingPath);
+                    
+                    if( !pendingPath.empty() )
+                    {
+                        // Term the remaining behaviors on the acive path.
+                        while( activePath.size() > activePathIndex )
+                        {
+                            activePath.back()->term();
+                            activePath.pop_back();
+                        }
+                        
+                        // Add the new behaviors to the active path.
+                        while( !pendingPath.empty() )
+                        {
+                            activePath.push_back(pendingPath.back());
+                            pendingPath.pop_back();
+                        }
+
+                        
+                        break;
+                    }
+                }
+                
                 break;
             }
             
@@ -155,6 +182,20 @@ Result Priority::initialize(ActiveList& pendingPath)
     return allCompleted
         ? Result::Complete
         : Result::Fail;
+}
+
+void Priority::reinitialize(const Base* childPtr, ActiveList& pendingPath)
+{
+    for(std::size_t iChild = 0; iChild < children.size() && children[iChild].get() != childPtr; ++iChild)
+    {
+        const auto result = children[iChild]->initialize(pendingPath);
+        if( result == Result::Continue )
+        {
+            pendingPath.push_back(children[iChild]);
+            return;
+        }
+
+    }
 }
 
 Result Sequence::initialize(ActiveList& pendingPath)

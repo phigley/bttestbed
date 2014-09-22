@@ -40,7 +40,9 @@ namespace AI
             virtual ~Base() { }
 
             // Called to set-up the behavior.
-            virtual Result initialize(std::vector<Base::Ptr>&) { return Result::Continue; }
+            virtual Result initialize(std::vector<Base::Ptr>& pendingBehaviors) { return Result::Continue; }
+            
+            virtual void reinitialize(const Base* childPtr, std::vector<Base::Ptr>& pendingBehaviors) { }
             
             // Called if initialize returned Result::Continue.
             virtual Result update(float dt) { return Result::Continue; }
@@ -97,6 +99,7 @@ namespace AI
             }
             
             virtual Result initialize(ActiveList&) override;
+            virtual void reinitialize(const Base* childPtr, std::vector<Base::Ptr>& pendingBehaviors) override;
             
         private :
 
