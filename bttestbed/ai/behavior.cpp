@@ -20,8 +20,7 @@ namespace
         // Terminate everything below us.
         while( activePath.size() > currentIndex )
         {
-            // PLH TODO - Pass parent result into term function.
-            activePath.back().getBehavior().term(/*result*/);
+            activePath.back().getBehavior().term();
             activePath.pop_back();
         }
 
