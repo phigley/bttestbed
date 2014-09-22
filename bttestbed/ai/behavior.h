@@ -42,6 +42,10 @@ namespace AI
             // Called to set-up the behavior.
             virtual Result initialize(std::vector<Base::Ptr>& pendingBehaviors) { return Result::Continue; }
             
+            // Called on the active child during planning updates.
+            // childPtr contains a pointer to the behavior's child (so the behavior does not need to track that itself).
+            // If pendingBehaviors comes back non-empty, the remaining children will be terminated and replaced with
+            // pendingBehaviors.
             virtual void reinitialize(const Base* childPtr, std::vector<Base::Ptr>& pendingBehaviors) { }
             
             // Called if initialize returned Result::Continue.
