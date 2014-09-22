@@ -88,7 +88,8 @@ namespace AI
             NPC&                    npc;
             std::vector<Base::Ptr>  children;
             ActiveList              activePath;
-            
+            float                   planningUpdateDuration = 0.0f;
+
         };
         
         class Priority : public Base

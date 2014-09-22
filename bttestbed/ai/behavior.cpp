@@ -60,10 +60,14 @@ namespace
 
 void Root::update(float dt)
 {
-    // PLH TODO - Add a delay to these full replans.
-    {
+    const float planningUpdateDelay = 0.25f;
     
-        auto activeChildPtr = activePath.empty() ? nullptr : activePath[0].get();
+    planningUpdateDuration += dt;
+    if( activePath.empty() || planningUpdateDuration > planningUpdateDelay )
+    {
+        planningUpdateDuration = 0.0f;
+        
+        const auto activeChildPtr = activePath.empty() ? nullptr : activePath[0].get();
         
         for( const auto& currentChild : children )
         {
