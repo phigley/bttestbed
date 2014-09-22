@@ -21,7 +21,7 @@ namespace
         while( activePath.size() > currentIndex )
         {
             // PLH TODO - Pass parent result into term function.
-            activePath.back()->term(/*result*/);
+            activePath.back().getBehavior().term(/*result*/);
             activePath.pop_back();
         }
 
@@ -34,16 +34,16 @@ namespace
 
         const std::size_t parentIndex = currentIndex - 1;
         
-        Base::ActiveList pendingPath;
+        Base::PendingList pendingPath;
         const auto parentResult = result == Result::Complete
-            ? activePath[parentIndex]->onChildCompleted(pendingPath)
-            : activePath[parentIndex]->onChildFailed(pendingPath);
+            ? activePath[parentIndex].getBehavior().onChildCompleted(pendingPath)
+            : activePath[parentIndex].getBehavior().onChildFailed(pendingPath);
 
         if( parentResult == Result::Continue )
         {
             while( !pendingPath.empty() )
             {
-                activePath.push_back(pendingPath.back());
+                activePath.push_back( ActiveBehavior{*pendingPath.back()} );
                 pendingPath.pop_back();
             }
             
@@ -58,6 +58,12 @@ namespace
 }
 
 
+ActiveBehavior::ActiveBehavior(Base& behavior_)
+    : requiresUpdate{behavior_.getRequiresUpdate()}
+    , behavior{behavior_}
+{
+}
+
 void Root::update(float dt)
 {
     const float planningUpdateDelay = 0.25f;
@@ -67,7 +73,7 @@ void Root::update(float dt)
     {
         planningUpdateDuration = 0.0f;
         
-        const auto activeChildPtr = activePath.empty() ? nullptr : activePath[0];
+        const auto activeChildPtr = activePath.empty() ? nullptr : &activePath[0].getBehavior();
         
         for( const auto& currentChild : children )
         {
@@ -75,14 +81,14 @@ void Root::update(float dt)
             {
                 for( std::size_t activePathIndex = 0; activePathIndex < activePath.size(); ++activePathIndex )
                 {
-                    Base::ActiveList pendingPath;
+                    Base::PendingList pendingPath;
                     
                     const auto activeChildIndex = activePathIndex + 1;
                     const auto activeChildPtr = activeChildIndex < activePath.size()
-                        ? activePath[activeChildIndex]
+                        ? &activePath[activeChildIndex].getBehavior()
                         : nullptr;
                     
-                    activePath[activePathIndex]->reinitialize(activeChildPtr, pendingPath);
+                    activePath[activePathIndex].getBehavior().reinitialize(activeChildPtr, pendingPath);
                     
                     if( !pendingPath.empty() )
                     {
@@ -91,14 +97,14 @@ void Root::update(float dt)
                         // was just re-initialized.
                         while( activePath.size() > activeChildIndex )
                         {
-                            activePath.back()->term();
+                            activePath.back().getBehavior().term();
                             activePath.pop_back();
                         }
                         
                         // Add the new behaviors to the active path.
                         while( !pendingPath.empty() )
                         {
-                            activePath.push_back(pendingPath.back());
+                            activePath.push_back( ActiveBehavior{*pendingPath.back()} );
                             pendingPath.pop_back();
                         }
 
@@ -110,25 +116,25 @@ void Root::update(float dt)
                 break;
             }
             
-            Base::ActiveList pendingPath;
+            Base::PendingList pendingPath;
             const auto initializeResult = currentChild->initialize(pendingPath);
             if( initializeResult == Result::Continue )
             {
                 // Terminate the old path.
                 while( !activePath.empty() )
                 {
-                    activePath.back()->term();
+                    activePath.back().getBehavior().term();
                     activePath.pop_back();
                 }
                 
                 // Add the current child to the top of the active path.
-                activePath.push_back(currentChild.get());
+                activePath.push_back( ActiveBehavior{*currentChild} );
                 
                 // Add the rest of the path nodes to the active path.
                 // The search pushed the nodes back in reverse order.
                 while( !pendingPath.empty() )
                 {
-                    activePath.push_back(pendingPath.back());
+                    activePath.push_back( ActiveBehavior{*pendingPath.back()} );
                     pendingPath.pop_back();
                 }
                 break;
@@ -145,17 +151,15 @@ void Root::update(float dt)
         
         while( currentIndex < activePath.size() )
         {
-            // PLH TODO : Store the update flag in active path so that we do not
-            //   dereference a pointer.
-            Behavior::Base* currentChild = activePath[currentIndex];
+            ActiveBehavior& currentChild = activePath[currentIndex];
             
-            if( !currentChild->getRequiresUpdate() )
+            if( !currentChild.getRequiresUpdate() )
             {
                 ++currentIndex;
                 continue;
             }
             
-            const auto updateResult = currentChild->update(dt);
+            const auto updateResult = currentChild.getBehavior().update(dt);
             
             if( updateResult == Result::Continue )
             {
@@ -170,7 +174,7 @@ void Root::update(float dt)
 }
 
 
-Result Priority::initialize(ActiveList& pendingPath)
+Result Priority::initialize(PendingList& pendingPath)
 {
     bool allCompleted = true;
     for(std::size_t iChild = 0; iChild < children.size(); ++iChild)
@@ -190,7 +194,7 @@ Result Priority::initialize(ActiveList& pendingPath)
         : Result::Fail;
 }
 
-void Priority::reinitialize(const Base* childPtr, ActiveList& pendingPath)
+void Priority::reinitialize(const Base* childPtr, PendingList& pendingPath)
 {
     for(std::size_t iChild = 0; iChild < children.size() && children[iChild].get() != childPtr; ++iChild)
     {
@@ -204,19 +208,19 @@ void Priority::reinitialize(const Base* childPtr, ActiveList& pendingPath)
     }
 }
 
-Result Sequence::initialize(ActiveList& pendingPath)
+Result Sequence::initialize(PendingList& pendingPath)
 {
     activeChild = 0;
     return initializeNextChild(pendingPath);
 }
 
-Result Sequence::onChildCompleted(ActiveList& pendingPath)
+Result Sequence::onChildCompleted(PendingList& pendingPath)
 {
     ++activeChild;
     return initializeNextChild(pendingPath);
 }
 
-Result Sequence::initializeNextChild(ActiveList& pendingPath)
+Result Sequence::initializeNextChild(PendingList& pendingPath)
 {
     // Keep initializing the next child while they return Complete.
     for( ; activeChild < children.size(); ++activeChild )
@@ -237,7 +241,7 @@ Result Sequence::initializeNextChild(ActiveList& pendingPath)
     return Result::Complete;
 }
 
-Result HasTarget::initialize(ActiveList& pendingPath)
+Result HasTarget::initialize(PendingList& pendingPath)
 {
     if( !getNPC().getTargetPos() )
         return Result::Fail;
@@ -263,7 +267,7 @@ Result HasTarget::update(float dt)
     return Result::Continue;
 }
 
-Result MoveAtVelocity::initialize(ActiveList&)
+Result MoveAtVelocity::initialize(PendingList&)
 {
     state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});
     
@@ -286,7 +290,7 @@ void MoveAtVelocity::term()
     state = nullptr;
 }
 
-Result MoveTowardTarget::initialize(ActiveList&)
+Result MoveTowardTarget::initialize(PendingList&)
 {
     if( !getNPC().getTargetPos())
         return Result::Fail;
@@ -325,7 +329,7 @@ void MoveTowardTarget::term()
     state = nullptr;
 }
 
-Result Wait::initialize(ActiveList&)
+Result Wait::initialize(PendingList&)
 {
     if( duration <= 0.0f )
         return Result::Complete;
@@ -345,14 +349,14 @@ Result Wait::update(float dt)
     return Result::Continue;
 }
 
-Result ClearTarget::initialize(ActiveList&)
+Result ClearTarget::initialize(PendingList&)
 {
     getNPC().clearTarget();
     return Result::Complete;
 }
 
 
-Result LockTarget::initialize(ActiveList& pendingPath)
+Result LockTarget::initialize(PendingList& pendingPath)
 {
     const auto initializeResult = child->initialize(pendingPath);
     

@@ -23,14 +23,34 @@ namespace AI
 
     namespace Behavior
     {
+        class Base;
+        
+        class ActiveBehavior
+        {
+        public:
+        
+            explicit ActiveBehavior(Base&);
+            
+            bool     getRequiresUpdate() const { return requiresUpdate; }
+            
+            Base&    getBehavior() { return behavior; }
+            const Base& getBehavior() const { return behavior; }
+            
+        private :
+        
+            bool    requiresUpdate;
+            Base&   behavior;
+        };
 
         class Base
         {
         public:
 
             
-            typedef std::shared_ptr<Base> Ptr;
-            typedef std::vector<Base*> ActiveList;
+            typedef std::shared_ptr<Base>       Ptr;
+            
+            typedef std::vector<Base*>          PendingList;
+            typedef std::vector<ActiveBehavior> ActiveList;
             
         public:
 
@@ -42,13 +62,13 @@ namespace AI
             virtual ~Base() { }
 
             // Called to set-up the behavior.
-            virtual Result initialize(ActiveList& pendingBehaviors) { return Result::Continue; }
+            virtual Result initialize(PendingList& pendingBehaviors) { return Result::Continue; }
             
             // Called on the active child during planning updates.
             // childPtr contains a pointer to the behavior's child (so the behavior does not need to track that itself).
             // If pendingBehaviors comes back non-empty, the remaining children will be terminated and replaced with
             // pendingBehaviors.
-            virtual void reinitialize(const Base* childPtr, ActiveList& pendingBehaviors) { }
+            virtual void reinitialize(const Base* childPtr, PendingList& pendingBehaviors) { }
             
             // Called if initialize returned Result::Continue.
             virtual Result update(float dt) { return Result::Continue; }
@@ -56,8 +76,8 @@ namespace AI
             // Called if and only if initialize returned Result::Continue.
             virtual void term() { }
             
-            virtual Result onChildFailed(ActiveList&)      { return Result::Fail; }
-            virtual Result onChildCompleted(ActiveList&)   { return Result::Complete; }
+            virtual Result onChildFailed(PendingList&)      { return Result::Fail; }
+            virtual Result onChildCompleted(PendingList&)   { return Result::Complete; }
             
             NPC& getNPC() { return npc; }
             const NPC& getNPC() const { return npc; }
@@ -103,8 +123,8 @@ namespace AI
             {
             }
             
-            virtual Result initialize(ActiveList&) override;
-            virtual void reinitialize(const Base* childPtr, ActiveList& pendingBehaviors) override;
+            virtual Result initialize(PendingList&) override;
+            virtual void reinitialize(const Base* childPtr, PendingList& pendingBehaviors) override;
             
         private :
 
@@ -122,12 +142,12 @@ namespace AI
             {
             }
         
-            virtual Result initialize(ActiveList&) override;
-            virtual Result onChildCompleted(ActiveList&) override;
+            virtual Result initialize(PendingList&) override;
+            virtual Result onChildCompleted(PendingList&) override;
                         
         private :
 
-            Result initializeNextChild(ActiveList& activeList);
+            Result initializeNextChild(PendingList& activeList);
 
             std::vector<Ptr>    children;
             std::size_t         activeChild = std::numeric_limits<std::size_t>::max();
@@ -144,7 +164,7 @@ namespace AI
                 , child{std::forward<Ptr>(child_)}
             { }
             
-            virtual Result initialize(ActiveList&) override;
+            virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
             
         private:
@@ -164,7 +184,7 @@ namespace AI
             {
             }
             
-            virtual Result initialize(ActiveList&) override;
+            virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
 
@@ -186,7 +206,7 @@ namespace AI
             {
             }
 
-            virtual Result initialize(ActiveList&) override;
+            virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
             
@@ -207,7 +227,7 @@ namespace AI
                 , duration{duration_}
             { }
             
-            virtual Result initialize(ActiveList&) override;
+            virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
 
         private:
@@ -225,7 +245,7 @@ namespace AI
                 : Base{npc_, false}
             { }
             
-            virtual Result initialize(ActiveList&) override;
+            virtual Result initialize(PendingList&) override;
         };
         
         class LockTarget : public Base
@@ -236,7 +256,7 @@ namespace AI
                 , child{ std::forward<Ptr>(child_) }
             { }
 
-            virtual Result initialize(ActiveList&) override;
+            virtual Result initialize(PendingList&) override;
             virtual void term() override;
             
         private:
