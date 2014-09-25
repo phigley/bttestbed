@@ -14,6 +14,8 @@
 #include "behavior.h"
 #include "maybe.h"
 
+#include "rapidxml/rapidxml.hpp"
+
 #include <memory>
 
 namespace AI
@@ -22,7 +24,7 @@ namespace AI
     {
     public:
 
-        NPC();
+        NPC(rapidxml::xml_node<>& behaviorDescription);
 
         virtual void update(const World& world, float dt) override;
 

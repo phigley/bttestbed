@@ -10,11 +10,36 @@
 #include "state.h"
 #include "npc.h"
 
+#include "rapidxml/rapidxml.hpp"
+
 using namespace AI;
 using namespace AI::Behavior;
 
 namespace
 {
+
+    Base::Ptr createChild(NPC& npc, rapidxml::xml_node<>& node)
+    {
+        if( strcmp(node.name(), "priority") == 0 )
+            return Base::Ptr{ new Priority{npc, node} };
+        if( strcmp(node.name(), "sequence") == 0 )
+            return Base::Ptr{ new Sequence{npc, node} };
+        if( strcmp(node.name(), "hastarget") == 0 )
+            return Base::Ptr{ new HasTarget{npc, node} };
+        if( strcmp(node.name(), "moveatvelocity") == 0 )
+            return Base::Ptr{ new MoveAtVelocity{npc, node} };
+        if( strcmp(node.name(), "movetowardtarget") == 0 )
+            return Base::Ptr{ new MoveTowardTarget{npc, node} };
+        if( strcmp(node.name(), "wait") == 0 )
+            return Base::Ptr{ new Wait{npc, node} };
+        if( strcmp(node.name(), "cleartarget") == 0 )
+            return Base::Ptr{ new ClearTarget{npc, node} };
+        if( strcmp(node.name(), "locktarget") == 0 )
+            return Base::Ptr{ new LockTarget{npc, node} };
+        
+        return Base::Ptr{};
+    }
+
     std::size_t handleResult(Base::ActiveList& activePath, std::size_t currentIndex, Result result)
     {
         // Terminate everything below us.
@@ -61,6 +86,17 @@ ActiveBehavior::ActiveBehavior(Base& behavior_)
     : requiresUpdate{behavior_.getRequiresUpdate()}
     , behavior{behavior_}
 {
+}
+
+
+Root::Root(NPC& npc_, rapidxml::xml_node<>& rootNode)
+    : npc{npc_}
+{
+    assert(0 == strcmp(rootNode.name(), "root"));
+    for( auto childNode = rootNode.first_node(); childNode; childNode = childNode->next_sibling() )
+    {
+        children.push_back( createChild(npc_, *childNode) );
+    }
 }
 
 void Root::update(float dt)
@@ -172,6 +208,15 @@ void Root::update(float dt)
     }
 }
 
+Priority::Priority(NPC& npc_, rapidxml::xml_node<>& priorityNode)
+    : Base{npc_, false}
+{
+    for( auto childNode = priorityNode.first_node(); childNode; childNode = childNode->next_sibling() )
+    {
+        children.push_back( createChild(npc_, *childNode) );
+        assert(children.back().get() != nullptr);
+    }
+}
 
 Result Priority::initialize(PendingList& pendingPath)
 {
@@ -204,6 +249,16 @@ void Priority::reinitialize(const Base* childPtr, PendingList& pendingPath)
             return;
         }
 
+    }
+}
+
+Sequence::Sequence(NPC& npc_, rapidxml::xml_node<>& sequenceNode)
+    : Base{npc_, false}
+{
+    for( auto childNode = sequenceNode.first_node(); childNode; childNode = childNode->next_sibling() )
+    {
+        children.push_back( createChild(npc_, *childNode) );
+       assert(children.back().get() != nullptr);
     }
 }
 
@@ -240,6 +295,33 @@ Result Sequence::initializeNextChild(PendingList& pendingPath)
     return Result::Complete;
 }
 
+HasTarget::HasTarget(NPC& npc_, rapidxml::xml_node<>& hasTargetNode)
+    : Base{npc_, true}
+    , maxDuration{-1.0f}
+{
+    for( auto attribute = hasTargetNode.first_attribute(); attribute; attribute = attribute->next_attribute())
+    {
+        if( 0 == strcmp(attribute->name(), "maxduration") )
+        {
+            maxDuration = atof(attribute->value());
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+    
+    auto childNode = hasTargetNode.first_node();
+    assert(childNode);
+    
+    if( childNode )
+    {
+        child = createChild(npc_, *childNode);
+        assert(childNode->next_sibling() == nullptr);
+    }
+}
+
+
 Result HasTarget::initialize(PendingList& pendingPath)
 {
     if( !getNPC().getTargetPos() )
@@ -266,6 +348,31 @@ Result HasTarget::update(float dt)
     return Result::Continue;
 }
 
+MoveAtVelocity::MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+    : Base{npc_, true}
+    , velocity{0,0}
+{
+    for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
+    {
+        if( 0 == strcmp(attribute->name(), "velocity_x") )
+        {
+            velocity.x = atof(attribute->value());
+        }
+        else if( 0 == strcmp(attribute->name(), "velocity_y") )
+        {
+            velocity.y = atof(attribute->value());
+        }
+        else
+        {
+            assert(false);
+        }
+     }
+    
+
+    assert(xmlNode.first_node() == nullptr);
+}
+
+
 Result MoveAtVelocity::initialize(PendingList&)
 {
     state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});
@@ -288,6 +395,33 @@ void MoveAtVelocity::term()
 {
     state = nullptr;
 }
+
+
+MoveTowardTarget::MoveTowardTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+    : Base{npc_, true}
+    , speed{0}
+    , desiredRange{0}
+{
+    for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
+    {
+        if( 0 == strcmp(attribute->name(), "speed") )
+        {
+            speed = atof(attribute->value());
+        }
+        else if( 0 == strcmp(attribute->name(), "desiredrange") )
+        {
+            desiredRange = atof(attribute->value());
+        }
+        else
+        {
+            assert(false);
+        }
+
+    }
+
+    assert(xmlNode.first_node() == nullptr);
+}
+
 
 Result MoveTowardTarget::initialize(PendingList&)
 {
@@ -328,6 +462,25 @@ void MoveTowardTarget::term()
     state = nullptr;
 }
 
+Wait::Wait(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+    : Base{npc_, true}
+    , duration{0}
+{
+    for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
+    {
+        if( 0 == strcmp(attribute->name(), "duration") )
+        {
+            duration = atof(attribute->value());
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+
+    assert(xmlNode.first_node() == nullptr);
+}
+
 Result Wait::initialize(PendingList&)
 {
     if( duration <= 0.0f )
@@ -348,12 +501,29 @@ Result Wait::update(float dt)
     return Result::Continue;
 }
 
+ClearTarget::ClearTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+    : Base{npc_, false}
+{
+    assert(xmlNode.first_node() == nullptr);
+}
+
 Result ClearTarget::initialize(PendingList&)
 {
     getNPC().clearTarget();
     return Result::Complete;
 }
 
+LockTarget::LockTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+    : Base{npc_, false}
+{
+    auto childNodePtr = xmlNode.first_node();
+    assert(childNodePtr != nullptr);
+    if( childNodePtr != nullptr )
+    {
+        child = createChild(npc_, *childNodePtr);
+        assert(childNodePtr->next_sibling() == nullptr);
+    }
+}
 
 Result LockTarget::initialize(PendingList& pendingPath)
 {

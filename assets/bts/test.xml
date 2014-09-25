@@ -1,0 +1,14 @@
+<root>
+    <hastarget>
+    	<priority>
+    		<hastarget maxduration="2.0">
+    			<movetowardtarget speed="-0.1" desiredrange="10000"/>
+    		</hastarget>
+			<sequence>
+				<movetowardtarget speed="0.75" desiredrange="0.01"/>
+				<cleartarget/>
+			</sequence>
+    	</priority>
+    </hastarget>
+    <moveatvelocity velocity_x="0.5" velocity_y="0.25"/>
+</root>

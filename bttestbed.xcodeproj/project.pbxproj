@@ -12,10 +12,24 @@
 		7214757319B12399006BCDA8 /* npc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7214756E19B12399006BCDA8 /* npc.cpp */; };
 		7214757419B12399006BCDA8 /* state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7214757019B12399006BCDA8 /* state.cpp */; };
 		72907C8119C4EEFA00678543 /* world.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72907C8019C4EEFA00678543 /* world.cpp */; };
+		72C0AB8B19D3F274006C00BF /* test.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 72C0AB8919D3F106006C00BF /* test.xml */; };
 		72DFC68719AFE71E002F3FF3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72DFC68619AFE71E002F3FF3 /* main.cpp */; };
 		72DFC69019AFE7D0002F3FF3 /* sdlapplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72DFC68F19AFE7D0002F3FF3 /* sdlapplication.cpp */; };
 		72DFC69319AFE8F0002F3FF3 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72DFC69219AFE8F0002F3FF3 /* SDL2.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		72C0AB8A19D3F25B006C00BF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = bts;
+			dstSubfolderSpec = 7;
+			files = (
+				72C0AB8B19D3F274006C00BF /* test.xml in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7214708E19B00334006BCDA8 /* entity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = entity.h; sourceTree = "<group>"; };
@@ -280,6 +294,11 @@
 		72907C7F19C4EE1600678543 /* world.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = world.h; sourceTree = "<group>"; };
 		72907C8019C4EEFA00678543 /* world.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = world.cpp; sourceTree = "<group>"; };
 		72907C8319C4F5CB00678543 /* maybe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = maybe.h; sourceTree = "<group>"; };
+		72C0AB8319D3D6B2006C00BF /* rapidxml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml.hpp; sourceTree = "<group>"; };
+		72C0AB8419D3D6B2006C00BF /* rapidxml_iterators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_iterators.hpp; sourceTree = "<group>"; };
+		72C0AB8519D3D6B2006C00BF /* rapidxml_print.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_print.hpp; sourceTree = "<group>"; };
+		72C0AB8619D3D6B2006C00BF /* rapidxml_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_utils.hpp; sourceTree = "<group>"; };
+		72C0AB8919D3F106006C00BF /* test.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = test.xml; sourceTree = "<group>"; };
 		72DFC68319AFE71E002F3FF3 /* bttestbed */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bttestbed; sourceTree = BUILT_PRODUCTS_DIR; };
 		72DFC68619AFE71E002F3FF3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72DFC68F19AFE7D0002F3FF3 /* sdlapplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdlapplication.cpp; sourceTree = "<group>"; };
@@ -602,9 +621,37 @@
 			path = ai;
 			sourceTree = "<group>";
 		};
+		72C0AB8019D3D6B2006C00BF /* rapidxml */ = {
+			isa = PBXGroup;
+			children = (
+				72C0AB8319D3D6B2006C00BF /* rapidxml.hpp */,
+				72C0AB8419D3D6B2006C00BF /* rapidxml_iterators.hpp */,
+				72C0AB8519D3D6B2006C00BF /* rapidxml_print.hpp */,
+				72C0AB8619D3D6B2006C00BF /* rapidxml_utils.hpp */,
+			);
+			path = rapidxml;
+			sourceTree = "<group>";
+		};
+		72C0AB8719D3F0CF006C00BF /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				72C0AB8819D3F0CF006C00BF /* bts */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		72C0AB8819D3F0CF006C00BF /* bts */ = {
+			isa = PBXGroup;
+			children = (
+				72C0AB8919D3F106006C00BF /* test.xml */,
+			);
+			path = bts;
+			sourceTree = "<group>";
+		};
 		72DFC67A19AFE71E002F3FF3 = {
 			isa = PBXGroup;
 			children = (
+				72C0AB8719D3F0CF006C00BF /* assets */,
 				72DFC69219AFE8F0002F3FF3 /* SDL2.framework */,
 				72DFC68519AFE71E002F3FF3 /* bttestbed */,
 				72DFC68419AFE71E002F3FF3 /* Products */,
@@ -622,6 +669,7 @@
 		72DFC68519AFE71E002F3FF3 /* bttestbed */ = {
 			isa = PBXGroup;
 			children = (
+				72C0AB8019D3D6B2006C00BF /* rapidxml */,
 				72907C8319C4F5CB00678543 /* maybe.h */,
 				72907C8019C4EEFA00678543 /* world.cpp */,
 				72907C7F19C4EE1600678543 /* world.h */,
@@ -645,6 +693,7 @@
 			buildPhases = (
 				72DFC67F19AFE71E002F3FF3 /* Sources */,
 				72DFC68019AFE71E002F3FF3 /* Frameworks */,
+				72C0AB8A19D3F25B006C00BF /* CopyFiles */,
 			);
 			buildRules = (
 			);

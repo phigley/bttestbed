@@ -12,7 +12,9 @@
 #include "result.h"
 #include "state.h"
 
+#include "rapidxml/rapidxml.hpp"
 #include "glm/glm.hpp"
+
 #include <vector>
 #include <memory>
 #include <limits>
@@ -94,12 +96,7 @@ namespace AI
         {
         public:
 
-            template<typename... Args>
-            Root(NPC& npc_, Args&&... children_)
-                : npc{npc_}
-                , children{ std::forward<Args>(children_)... }
-            {
-            }
+            Root(NPC& npc_, rapidxml::xml_node<>& rootNode);
             
             void update(float dt);
             
@@ -116,12 +113,7 @@ namespace AI
         {
         public:
 
-            template<typename... Args>
-            Priority(NPC& npc_, Args&&... children_)
-                : Base{npc_, false}
-                , children{ std::forward<Args>(children_)... }
-            {
-            }
+            Priority(NPC& npc_, rapidxml::xml_node<>& priorityNode);
             
             virtual Result initialize(PendingList&) override;
             virtual void reinitialize(const Base* childPtr, PendingList& pendingBehaviors) override;
@@ -135,12 +127,8 @@ namespace AI
         class Sequence : public Base
         {
         public:
-            template<typename... Args>
-            Sequence(NPC& npc_, Args&&... children_)
-                : Base{npc_, false}
-                , children{ std::forward<Args>(children_)... }
-            {
-            }
+
+            Sequence(NPC& npc_, rapidxml::xml_node<>& sequenceNode);
         
             virtual Result initialize(PendingList&) override;
             virtual Result onChildCompleted(PendingList&) override;
@@ -158,11 +146,7 @@ namespace AI
         {
         public:
         
-            HasTarget(NPC& npc_, float maxDuration_, Ptr&& child_)
-                : Base{npc_, true}
-                , maxDuration{maxDuration_}
-                , child{std::forward<Ptr>(child_)}
-            { }
+            HasTarget(NPC& npc_, rapidxml::xml_node<>& hasTargetNode);
             
             virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
@@ -178,12 +162,8 @@ namespace AI
         {
         public:
 
-            MoveAtVelocity(NPC& npc_, const glm::vec2& velocity_)
-                : Base{npc_, true}
-                , velocity{velocity_}
-            {
-            }
-            
+            MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode);
+
             virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
@@ -199,13 +179,8 @@ namespace AI
         {
         public:
         
-            MoveTowardTarget(NPC& npc_, float speed_, float desiredRange_)
-                : Base{npc_, true}
-                , speed{speed_}
-                , desiredRange{desiredRange_}
-            {
-            }
-
+            MoveTowardTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode);
+            
             virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
@@ -222,10 +197,7 @@ namespace AI
         {
         public:
         
-            Wait(NPC& npc_, float duration_)
-                : Base{npc_, true}
-                , duration{duration_}
-            { }
+            Wait(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
             virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
@@ -241,9 +213,7 @@ namespace AI
         {
         public:
         
-            ClearTarget(NPC& npc_)
-                : Base{npc_, false}
-            { }
+            ClearTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
             virtual Result initialize(PendingList&) override;
         };
@@ -251,10 +221,7 @@ namespace AI
         class LockTarget : public Base
         {
         public:
-            LockTarget(NPC& npc_, Ptr&& child_)
-                : Base{npc_, false}
-                , child{ std::forward<Ptr>(child_) }
-            { }
+            LockTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode);
 
             virtual Result initialize(PendingList&) override;
             virtual void term() override;
