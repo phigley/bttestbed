@@ -49,7 +49,7 @@ namespace AI
         public:
 
             
-            typedef std::shared_ptr<Base>       Ptr;
+            typedef std::unique_ptr<Base>       Ptr;
             
             typedef std::vector<Base*>          PendingList;
             typedef std::vector<ActiveBehavior> ActiveList;
