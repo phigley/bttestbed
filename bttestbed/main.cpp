@@ -12,6 +12,7 @@
 #include "ai/state.h"
 
 #include "rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml_utils.hpp"
 
 #include <iostream>
 #include <memory>
@@ -21,42 +22,24 @@ class XmlDocument
 public:
 
     XmlDocument(const char* fileName)
+        : file(fileName)
     {
-        FILE* file = fopen(fileName, "r");
-        assert(file);
-        if (file)
-        {
-            fseek(file, 0, SEEK_END);
-            const std::size_t fileSize = ftell(file);
-            
-            xmlData = new char[fileSize + 1];
-            rewind(file);
-            
-            fread(xmlData, 1, fileSize, file);
-            fclose(file);
+        document.parse<0>(file.data());
 
-            document.parse<0>(xmlData);
-        }
     }
 
-    ~XmlDocument()
-    {
-        delete[] xmlData;
-    }
-    
     rapidxml::xml_document<>& getDocument() { return document; }
     
 private:
 
-    char* xmlData = nullptr;
+    rapidxml::file<>         file;
     rapidxml::xml_document<> document;
 };
 
-int main(int argc, const char * argv[])
-{
-	SdlApplication app{800, 800};
 
-    XmlDocument xmlDocument("bts/test.xml");
+void addNPC(SdlApplication& app, const char* behaviorFile)
+{
+    XmlDocument xmlDocument(behaviorFile);
 
     auto rootNode = xmlDocument.getDocument().first_node();
     assert(rootNode != nullptr);
@@ -66,6 +49,14 @@ int main(int argc, const char * argv[])
     
         app.getWorld().addEntity<AI::NPC>(*rootNode);
     }
+}
+
+int main(int argc, const char * argv[])
+{
+	SdlApplication app{800, 800};
+
+    addNPC(app, "bts/test.xml");
+    addNPC(app, "bts/test2.xml");
     
     while( app.beginFrame() )
     {

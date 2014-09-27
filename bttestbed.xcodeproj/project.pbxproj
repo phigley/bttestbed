@@ -12,6 +12,7 @@
 		7214757319B12399006BCDA8 /* npc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7214756E19B12399006BCDA8 /* npc.cpp */; };
 		7214757419B12399006BCDA8 /* state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7214757019B12399006BCDA8 /* state.cpp */; };
 		72907C8119C4EEFA00678543 /* world.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72907C8019C4EEFA00678543 /* world.cpp */; };
+		72A5503C19D714D0008347DC /* test2.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 72A5503B19D7133B008347DC /* test2.xml */; };
 		72C0AB8B19D3F274006C00BF /* test.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 72C0AB8919D3F106006C00BF /* test.xml */; };
 		72DFC68719AFE71E002F3FF3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72DFC68619AFE71E002F3FF3 /* main.cpp */; };
 		72DFC69019AFE7D0002F3FF3 /* sdlapplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72DFC68F19AFE7D0002F3FF3 /* sdlapplication.cpp */; };
@@ -21,11 +22,12 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		72C0AB8A19D3F25B006C00BF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = bts;
 			dstSubfolderSpec = 7;
 			files = (
 				72C0AB8B19D3F274006C00BF /* test.xml in CopyFiles */,
+				72A5503C19D714D0008347DC /* test2.xml in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,6 +296,7 @@
 		72907C7F19C4EE1600678543 /* world.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = world.h; sourceTree = "<group>"; };
 		72907C8019C4EEFA00678543 /* world.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = world.cpp; sourceTree = "<group>"; };
 		72907C8319C4F5CB00678543 /* maybe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = maybe.h; sourceTree = "<group>"; };
+		72A5503B19D7133B008347DC /* test2.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = test2.xml; sourceTree = "<group>"; };
 		72C0AB8319D3D6B2006C00BF /* rapidxml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml.hpp; sourceTree = "<group>"; };
 		72C0AB8419D3D6B2006C00BF /* rapidxml_iterators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_iterators.hpp; sourceTree = "<group>"; };
 		72C0AB8519D3D6B2006C00BF /* rapidxml_print.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_print.hpp; sourceTree = "<group>"; };
@@ -644,6 +647,7 @@
 			isa = PBXGroup;
 			children = (
 				72C0AB8919D3F106006C00BF /* test.xml */,
+				72A5503B19D7133B008347DC /* test2.xml */,
 			);
 			path = bts;
 			sourceTree = "<group>";

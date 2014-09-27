@@ -1,0 +1,9 @@
+<root>
+    <hastarget maxduration="2.0">
+        <sequence>
+            <movetowardtarget speed="2" desiredrange="0.01"/>
+            <cleartarget/>
+        </sequence>
+    </hastarget>
+    <moveatvelocity velocity_x="0.0" velocity_y="0.25"/>
+</root>
