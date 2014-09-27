@@ -295,11 +295,54 @@ Result Sequence::initializeNextChild(PendingList& pendingPath)
     return Result::Complete;
 }
 
-HasTarget::HasTarget(NPC& npc_, rapidxml::xml_node<>& hasTargetNode)
+Conditional::Conditional(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     : Base{npc_, true}
+{
+    auto childNode = xmlNode.first_node();
+    assert(childNode);
+    
+    if( childNode )
+    {
+        child = createChild(npc_, *childNode);
+        assert(childNode->next_sibling() == nullptr);
+    }
+}
+
+Result Conditional::initialize(PendingList& pendingPath)
+{
+    if( !isValidToEnter() )
+        return Result::Fail;
+    
+    if( !isValid() )
+        return Result::Fail;
+    
+    if( isComplete() )
+        return Result::Complete;
+    
+    const auto initializeResult = child->initialize(pendingPath);
+    if( initializeResult == Result::Continue )
+        pendingPath.push_back(child.get());
+    
+    return initializeResult;
+}
+
+Result Conditional::update(float dt)
+{
+    if( !isValid() )
+        return Result::Fail;
+    
+    if( isComplete() )
+        return Result::Complete;
+    
+    return Result::Continue;
+}
+
+
+HasTarget::HasTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+    : Conditional{npc_, xmlNode}
     , maxDuration{-1.0f}
 {
-    for( auto attribute = hasTargetNode.first_attribute(); attribute; attribute = attribute->next_attribute())
+    for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
     {
         if( 0 == strcmp(attribute->name(), "maxduration") )
         {
@@ -310,42 +353,22 @@ HasTarget::HasTarget(NPC& npc_, rapidxml::xml_node<>& hasTargetNode)
             assert(false);
         }
     }
-    
-    auto childNode = hasTargetNode.first_node();
-    assert(childNode);
-    
-    if( childNode )
-    {
-        child = createChild(npc_, *childNode);
-        assert(childNode->next_sibling() == nullptr);
-    }
 }
 
-
-Result HasTarget::initialize(PendingList& pendingPath)
+bool HasTarget::isValid() const
 {
     if( !getNPC().getTargetPos() )
-        return Result::Fail;
+        return false;
     
-    if( maxDuration > 0.0f && getNPC().getTargetDuration() > maxDuration )
-        return Result::Complete;
-
-    const auto initializeResult = child->initialize(pendingPath);
-    if( initializeResult == Result::Continue )
-        pendingPath.push_back(child.get());
-    
-    return initializeResult;
+    return true;
 }
 
-Result HasTarget::update(float dt)
+bool HasTarget::isComplete() const
 {
-    if( !getNPC().getTargetPos() )
-        return Result::Fail;
-    
     if( maxDuration > 0.0f && getNPC().getTargetDuration() > maxDuration )
-        return Result::Complete;
+        return true;
     
-    return Result::Continue;
+    return false;
 }
 
 MoveAtVelocity::MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode)

@@ -142,18 +142,37 @@ namespace AI
             
         };
 
-        class HasTarget : public Base
+        class Conditional : public Base
         {
         public:
         
-            HasTarget(NPC& npc_, rapidxml::xml_node<>& hasTargetNode);
+            Conditional(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
             virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
+        
+        protected:
+            
+            virtual bool isValidToEnter() const { return true; }
+            virtual bool isValid() const    { return true; }
+            virtual bool isComplete() const { return false; }
             
         private:
         
             Ptr child;
+        };
+        
+        class HasTarget : public Conditional
+        {
+        public:
+        
+            HasTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode);
+            
+        private:
+        
+            bool isValid() const;
+            bool isComplete() const;
+        
             float maxDuration;
         };
         
