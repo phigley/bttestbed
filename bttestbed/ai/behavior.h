@@ -27,23 +27,6 @@ namespace AI
     {
         class Base;
         
-        class ActiveBehavior
-        {
-        public:
-        
-            explicit ActiveBehavior(Base&);
-            
-            bool     getRequiresUpdate() const { return requiresUpdate; }
-            
-            Base&    getBehavior() { return behavior; }
-            const Base& getBehavior() const { return behavior; }
-            
-        private :
-        
-            bool    requiresUpdate;
-            Base&   behavior;
-        };
-
         class Base
         {
         public:
@@ -52,7 +35,6 @@ namespace AI
             typedef std::unique_ptr<Base>       Ptr;
             
             typedef std::vector<Base*>          PendingList;
-            typedef std::vector<ActiveBehavior> ActiveList;
             
         public:
 
@@ -92,23 +74,8 @@ namespace AI
             bool    requiresUpdate;
         };
 
-        class Root
-        {
-        public:
+        Base::Ptr createChild(NPC& npc, rapidxml::xml_node<>& node);
 
-            Root(NPC& npc_, rapidxml::xml_node<>& rootNode);
-            
-            void update(float dt);
-            
-        private :
-        
-            NPC&                    npc;
-            std::vector<Base::Ptr>  children;
-            Base::ActiveList        activePath;
-            float                   planningUpdateDuration = 0.0f;
-
-        };
-        
         class Priority : public Base
         {
         public:

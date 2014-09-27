@@ -11,7 +11,7 @@
 
 #include "entity.h"
 #include "state.h"
-#include "behavior.h"
+#include "behaviortree.h"
 #include "maybe.h"
 
 #include "rapidxml/rapidxml.hpp"
