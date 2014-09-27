@@ -14,7 +14,7 @@ using namespace AI::State;
 
 Result MoveAtVelocity::update(float dt)
 {
-    getNPC().moveBy( velocity*dt );
+    npc.moveBy( velocity*dt );
     
     return Result::Continue;
 }
@@ -22,11 +22,11 @@ Result MoveAtVelocity::update(float dt)
 
 Result MoveTowardTarget::update(float dt)
 {
-    const auto& targetPos = getNPC().getTargetPos();
+    const auto& targetPos = npc.getTargetPos();
     if( !targetPos )
         return Result::Fail;
     
-    const auto deltaPos = *targetPos - getNPC().getPos();
+    const auto deltaPos = *targetPos - npc.getPos();
     const auto deltaDistance = glm::length(deltaPos);
     
     if( speed > 0.0f )
@@ -46,7 +46,7 @@ Result MoveTowardTarget::update(float dt)
     
     const auto moveAmount = deltaPos * scaleAmount;
     
-    getNPC().moveBy( moveAmount );
+    npc.moveBy( moveAmount );
     
     return Result::Continue;
 }
