@@ -237,17 +237,39 @@ namespace AI
             virtual Result initialize(PendingList&) override;
         };
         
-        class LockTarget : public Base
+        class Decorator : public Base
+        {
+        public:
+            Decorator(NPC& npc_, rapidxml::xml_node<>& xmlNode);
+            
+            virtual Result initialize(PendingList&) override;
+            virtual void term() override;
+
+        protected:
+        
+            // Called before the child is initialized.
+            virtual bool setUp() { return true; }
+            
+            // Always called if setUp had been called.
+            virtual void tearDown() { }
+            
+        private:
+        
+            Ptr child;
+        };
+        
+        class LockTarget : public Decorator
         {
         public:
             LockTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode);
 
-            virtual Result initialize(PendingList&) override;
-            virtual void term() override;
+        protected:
+            
+            virtual bool setUp() override;
+            virtual void tearDown() override;
             
         private:
         
-            bool    appliedLock = false;
             Ptr     child;
         
         };

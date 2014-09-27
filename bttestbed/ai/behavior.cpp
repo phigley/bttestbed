@@ -536,7 +536,7 @@ Result ClearTarget::initialize(PendingList&)
     return Result::Complete;
 }
 
-LockTarget::LockTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+Decorator::Decorator(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     : Base{npc_, false}
 {
     auto childNodePtr = xmlNode.first_node();
@@ -548,20 +548,40 @@ LockTarget::LockTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     }
 }
 
-Result LockTarget::initialize(PendingList& pendingPath)
+Result Decorator::initialize(PendingList& pendingPath)
 {
+    if( !setUp() )
+        return Result::Fail;
+        
     const auto initializeResult = child->initialize(pendingPath);
     
-    if( initializeResult == Result::Continue )
+    if( initializeResult != Result::Continue )
     {
-        getNPC().lockTarget();
-        pendingPath.push_back(child.get());
+        tearDown();
+        return initializeResult;
     }
     
-    return initializeResult;
+    pendingPath.push_back(child.get());
+    return Result::Continue;
 }
 
-void LockTarget::term()
+void Decorator::term()
+{
+    tearDown();
+}
+
+LockTarget::LockTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
+    : Decorator{npc_, xmlNode}
+{
+}
+
+bool LockTarget::setUp()
+{
+    getNPC().lockTarget();
+    return true;
+}
+
+void LockTarget::tearDown()
 {
     getNPC().unlockTarget();
 }
