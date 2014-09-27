@@ -42,7 +42,7 @@ namespace AI
         float                   targetDuration = 0.0f;
         Maybe<glm::vec2>        oldTargetPos;
         bool                    canChangeTarget = true;
-        Behavior::Root          rootBehavior;
+        Behavior::Tree          behaviorTree;
     };
 }
 

@@ -65,7 +65,7 @@ ActiveBehavior::ActiveBehavior(Base& behavior_)
 }
 
 
-Root::Root(NPC& npc_, rapidxml::xml_node<>& rootNode)
+Tree::Tree(NPC& npc_, rapidxml::xml_node<>& rootNode)
     : npc{npc_}
 {
     assert(0 == strcmp(rootNode.name(), "root"));
@@ -75,7 +75,7 @@ Root::Root(NPC& npc_, rapidxml::xml_node<>& rootNode)
     }
 }
 
-void Root::update(float dt)
+void Tree::update(float dt)
 {
     const float planningUpdateDelay = 0.25f;
     

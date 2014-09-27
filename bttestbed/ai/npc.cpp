@@ -16,21 +16,7 @@
 using namespace AI;
 
 NPC::NPC(rapidxml::xml_node<>& behaviorDescription)
-    : rootBehavior{ *this, behaviorDescription }
-//       { *this
-//        , std::make_shared<Behavior::HasTarget>(*this, 0.0f
-//            , std::make_shared<Behavior::Priority>(*this
-//                , std::make_shared<Behavior::HasTarget>(*this, 2.0f
-//                    , std::make_shared<Behavior::MoveTowardTarget>(*this, -0.1f, 10000.0f)
-//                    )
-//                , std::make_shared<Behavior::Sequence>(*this
-//                    , std::make_shared<Behavior::MoveTowardTarget>(*this, 0.75f, 0.01f)
-//                    , std::make_shared<Behavior::ClearTarget>(*this)
-//                    )
-//                )
-//            )
-//        , std::make_shared<Behavior::MoveAtVelocity>(*this, glm::vec2{0.5f, 0.25f})
-//        }
+    : behaviorTree{ *this, behaviorDescription }
 {
 }
 
@@ -47,7 +33,7 @@ void NPC::update(const World& world, float dt)
         targetDuration += dt;
     }
     
-    rootBehavior.update(dt);
+    behaviorTree.update(dt);
 }
 
 void NPC::clearTarget()

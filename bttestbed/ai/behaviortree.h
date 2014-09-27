@@ -40,11 +40,11 @@ namespace AI
 
         typedef std::vector<ActiveBehavior> ActiveList;
         
-        class Root
+        class Tree
         {
         public:
 
-            Root(NPC& npc_, rapidxml::xml_node<>& rootNode);
+            Tree(NPC& npc_, rapidxml::xml_node<>& rootNode);
             
             void update(float dt);
             

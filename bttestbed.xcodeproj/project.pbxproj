@@ -618,8 +618,8 @@
 			children = (
 				7214757519B54BB7006BCDA8 /* result.h */,
 				7214756C19B12399006BCDA8 /* behavior.cpp */,
-				72A5504019D7362C008347DC /* behaviortree.cpp */,
 				7214756D19B12399006BCDA8 /* behavior.h */,
+				72A5504019D7362C008347DC /* behaviortree.cpp */,
 				72A5503F19D735A9008347DC /* behaviortree.h */,
 				7214756E19B12399006BCDA8 /* npc.cpp */,
 				7214756F19B12399006BCDA8 /* npc.h */,
