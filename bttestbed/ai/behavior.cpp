@@ -139,20 +139,31 @@ Conditional::Conditional(NPC& npc_, rapidxml::xml_node<>& xmlNode)
 
 Result Conditional::initialize(PendingList& pendingPath)
 {
-    if( !isValidToEnter() )
+    if( !setUp() )
         return Result::Fail;
     
     if( !isValid() )
+    {
+        tearDown();
         return Result::Fail;
+    }
     
     if( isComplete() )
+    {
+        tearDown();
         return Result::Complete;
+    }
     
     const auto initializeResult = child->initialize(pendingPath);
-    if( initializeResult == Result::Continue )
-        pendingPath.push_back(child.get());
+    if( initializeResult != Result::Continue )
+    {
+        tearDown();
+        return initializeResult;
+    }
     
-    return initializeResult;
+    pendingPath.push_back(child.get());
+    
+    return Result::Complete;
 }
 
 Result Conditional::update(float dt)
@@ -166,6 +177,10 @@ Result Conditional::update(float dt)
     return Result::Continue;
 }
 
+void Conditional::term()
+{
+    tearDown();
+}
 
 HasTarget::HasTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     : Conditional{npc_, xmlNode}

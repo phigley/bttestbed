@@ -117,10 +117,13 @@ namespace AI
             
             virtual Result initialize(PendingList&) override;
             virtual Result update(float dt) override;
-        
+            virtual void   term() override;
+            
         protected:
             
-            virtual bool isValidToEnter() const { return true; }
+            virtual bool setUp()    { return true; }
+            virtual void tearDown() { }
+            
             virtual bool isValid() const    { return true; }
             virtual bool isComplete() const { return false; }
             
