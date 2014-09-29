@@ -190,7 +190,7 @@ HasTarget::HasTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     {
         if( 0 == strcmp(attribute->name(), "maxduration") )
         {
-            maxDuration = atof(attribute->value());
+            maxDuration = float(atof(attribute->value()));
         }
         else
         {
@@ -223,11 +223,11 @@ MoveAtVelocity::MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     {
         if( 0 == strcmp(attribute->name(), "velocity_x") )
         {
-            velocity.x = atof(attribute->value());
+            velocity.x = float(atof(attribute->value()));
         }
         else if( 0 == strcmp(attribute->name(), "velocity_y") )
         {
-            velocity.y = atof(attribute->value());
+            velocity.y = float(atof(attribute->value()));
         }
         else
         {
@@ -273,11 +273,11 @@ MoveTowardTarget::MoveTowardTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     {
         if( 0 == strcmp(attribute->name(), "speed") )
         {
-            speed = atof(attribute->value());
+            speed = float(atof(attribute->value()));
         }
         else if( 0 == strcmp(attribute->name(), "desiredrange") )
         {
-            desiredRange = atof(attribute->value());
+            desiredRange = float(atof(attribute->value()));
         }
         else
         {
@@ -337,7 +337,7 @@ Wait::Wait(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     {
         if( 0 == strcmp(attribute->name(), "duration") )
         {
-            duration = atof(attribute->value());
+            duration = float(atof(attribute->value()));
         }
         else
         {
