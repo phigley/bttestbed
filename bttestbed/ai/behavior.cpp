@@ -163,7 +163,7 @@ Result Conditional::initialize(PendingList& pendingPath)
     
     pendingPath.push_back(child.get());
     
-    return Result::Complete;
+    return Result::Continue;
 }
 
 Result Conditional::update(float dt)
