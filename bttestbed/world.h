@@ -16,7 +16,10 @@
 #include <vector>
 
 class Entity;
-class SDL_Renderer;
+namespace sf
+{
+  class RenderWindow;
+}
 
 class World
 {
@@ -30,7 +33,7 @@ public:
 
     void update(float dt);
 
-    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight);
+    void render(sf::RenderWindow& window, int windowWidth, int windowHeight);
 
     void setTargetPos(const glm::vec2& newPosition) { targetPos = newPosition; }
     void clearTargetPos()                           { targetPos = Maybe<glm::vec2>{}; }

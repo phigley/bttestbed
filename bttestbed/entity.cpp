@@ -8,7 +8,7 @@
 
 #include "entity.h"
 
-#include <SDL2/SDL.h>
+#include <SFML/Graphics.hpp>
 
 namespace
 {
@@ -37,14 +37,19 @@ void Entity::moveBy(const glm::vec2& deltaPos)
     moveTo(currentPos + deltaPos);
 }
 
-void Entity::render(SDL_Renderer* renderer, int windowWidth, int windowHeight)
+void Entity::render(sf::RenderWindow& window, int windowWidth, int windowHeight)
 {
-    SDL_Rect r;
-	r.w = 10;
-	r.h = 10;
-	r.x = int((currentPos.x*0.5f + 0.5f)*float(windowWidth)) - (r.w/2);
-	r.y = int((-currentPos.y*0.5f + 0.5f)*float(windowHeight)) - (r.h/2);
+    const auto size = 10.0f;
+    
+    auto drawShape = sf::CircleShape{size};
+    
+    const auto position = sf::Vector2f
+        { (currentPos.x*0.5f + 0.5f)*float(windowWidth) - size*0.5f
+        , (-currentPos.y*0.5f + 0.5f)*float(windowHeight) - size*0.5f
+        };
+        
+    drawShape.setPosition(position);
+    drawShape.setFillColor( sf::Color{0xff, 0xff, 0, 0xff} );
 
-	SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0, 0xff);
-	SDL_RenderFillRect(renderer, &r);
+    window.draw(drawShape);
 }

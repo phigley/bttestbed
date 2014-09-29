@@ -2,7 +2,7 @@
 #ifndef bttestbed_sdlapplication_h
 #define bttestbed_sdlapplication_h
 
-#include <SDL2/SDL.h>
+#include <SFML/Graphics.hpp>
 
 #include "world.h"
 
@@ -26,7 +26,7 @@ public:
 private:
 
 	// Called to process SDL event.
-	bool onEvent(SDL_Event* ev);
+	bool onEvent(const sf::Event& event);
 	
     SdlApplication(const SdlApplication&) = delete;
     SdlApplication& operator=(const SdlApplication&) = delete;
@@ -35,10 +35,8 @@ private:
     
     World   world;
     
-	// Whether the application is in event loop.
-	bool quit = false;
-	SDL_Window* win = nullptr;
-	SDL_Renderer* renderer = nullptr;
+    sf::Clock           clock;
+    sf::RenderWindow    window;
 };
 
 #endif

@@ -7,89 +7,70 @@
 #include <string>
 
 SdlApplication::SdlApplication(int width, int height)
+    : window{ sf::VideoMode(width, height), "BT Test Bed" }
 {
-	// Initialize the SDL library.
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-        std::string msg = "SDL_INIT() failed: ";
-        msg += SDL_GetError();
-        throw std::runtime_error(msg);
-	}
-	
-    const char apptitle[] = "SDL Sample Application";
-	win = SDL_CreateWindow(apptitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
-	renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    window.setFramerateLimit(30);
 }
 
 SdlApplication::~SdlApplication()
 {
-	if (win)
-	{
-		SDL_DestroyWindow(win);
-		SDL_DestroyRenderer(renderer);
-		SDL_Quit();
-	}
 }
 
 bool SdlApplication::beginFrame()
 {
-	// Enter to the SDL event loop.
-	SDL_Event ev;
-    while( SDL_PollEvent(&ev) != 0 )
+    sf::Event event;
+    while( window.pollEvent(event) )
     {
-        if( !onEvent(&ev) )
+        if( !onEvent(event) )
             return false;
     }
     
-    
-    const std::uint32_t newTime = SDL_GetTicks();
-    
-    const float deltaTime = float(newTime - currentTime)*1e-3f;
-    currentTime = newTime;
-    
-    world.update(deltaTime);
+    const auto deltaTime = clock.restart();
+
+    world.update(deltaTime.asSeconds());
     
     return true;
 }
 
-bool SdlApplication::onEvent(SDL_Event* ev)
+bool SdlApplication::onEvent(const sf::Event& event)
 {
-	switch (ev->type)
+	switch( event.type )
 	{
-		case SDL_QUIT:
+		case sf::Event::Closed :
 			return false;
-			break;
 			
-		case SDL_KEYDOWN:
+		case sf::Event::KeyPressed :
 		{
-			if (ev->key.keysym.sym == SDLK_ESCAPE)
+			if( event.key.code == sf::Keyboard::Escape )
 			{
 				return false;
 			}
 		}
         break;
         
-        case SDL_MOUSEBUTTONDOWN:
+        case sf::Event::MouseButtonPressed :
         {
-            if( ev->button.button == SDL_BUTTON_LEFT )
+            if( event.mouseButton.button == sf::Mouse::Left )
             {
-                int w,h;
-                SDL_GetWindowSize(win, &w, &h);
+                const auto windowSize = window.getSize();
                 
                 const auto pos = glm::vec2
-                    { float(ev->button.x)*2.0f/float(w) - 1.0f
-                    , 1.0f - float(ev->button.y)*2.0f/float(h)
+                    { float(event.mouseButton.x)*2.0f/float(windowSize.x) - 1.0f
+                    , 1.0f - float(event.mouseButton.y)*2.0f/float(windowSize.y)
                     };
                 
                 
                 world.setTargetPos(pos);
             }
-            else if (ev->button.button == SDL_BUTTON_RIGHT)
+            else if( event.mouseButton.button == sf::Mouse::Right )
             {
                 world.clearTargetPos();
             }
         }
         break;
+        
+        default:
+            break;
     }
     
     return true;
@@ -97,17 +78,12 @@ bool SdlApplication::onEvent(SDL_Event* ev)
 
 void SdlApplication::render()
 {
-	int w,h;
-	SDL_GetWindowSize(win, &w, &h);
+    window.clear();
+
+    const auto windowSize = window.getSize();
+    world.render(window, windowSize.x, windowSize.y);
     
-	//
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
-	SDL_RenderClear(renderer);
-	
-    world.render(renderer, w, h);
-    
-	SDL_RenderPresent(renderer);
-    SDL_Delay(10);
+    window.display();
 }
 
 

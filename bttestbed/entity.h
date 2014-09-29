@@ -11,8 +11,11 @@
 
 #include "glm/glm.hpp"
 
-class SDL_Renderer;
 class World;
+namespace sf
+{
+  class RenderWindow;
+}
 
 // PLH NOTE : This class is premature generalization.  Feel free to remove it and deal with derived types directly!
 
@@ -25,7 +28,7 @@ public:
     virtual ~Entity() { }
     
     virtual void update(const World& world, float dt) = 0;
-    virtual void render(SDL_Renderer*, int windowWidth, int windowHeight);
+    virtual void render(sf::RenderWindow& window, int windowWidth, int windowHeight);
 
     const glm::vec2& getPos() const { return currentPos; }
     

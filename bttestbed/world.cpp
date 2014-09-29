@@ -10,7 +10,7 @@
 
 #include "entity.h"
 
-#include <SDL2/SDL.h>
+#include <SFML/Graphics.hpp>
 
 void World::update(float dt)
 {
@@ -20,22 +20,27 @@ void World::update(float dt)
     }
 }
 
-void World::render(SDL_Renderer* renderer, int windowWidth, int windowHeight)
+void World::render(sf::RenderWindow& window, int windowWidth, int windowHeight)
 {
     if( targetPos )
     {
-        SDL_Rect r;
-        r.w = 3;
-        r.h = 3;
-        r.x = int((targetPos->x*0.5f + 0.5f)*float(windowWidth)) - (r.w/2);
-        r.y = int((-targetPos->y*0.5f + 0.5f)*float(windowHeight)) - (r.h/2);
-
-        SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
-        SDL_RenderFillRect(renderer, &r);
+        const auto targetSize = 3.0f;
+        
+        auto targetShape = sf::RectangleShape{ sf::Vector2f{3.0f, 3.0f} };
+        
+        const auto drawPos = sf::Vector2f
+            { (targetPos->x*0.5f + 0.5f)*float(windowWidth) - targetSize*0.5f
+            , (-targetPos->y*0.5f + 0.5f)*float(windowHeight) - targetSize*0.5f
+            };
+        
+        targetShape.setPosition(drawPos);
+        targetShape.setFillColor(sf::Color::White);
+        
+        window.draw(targetShape);
     }
     
     for(auto& entityPtr : entityPtrs)
     {
-        entityPtr->render(renderer, windowWidth, windowHeight);
+        entityPtr->render(window, windowWidth, windowHeight);
     }
 }
