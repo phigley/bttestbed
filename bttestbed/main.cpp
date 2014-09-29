@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Peter Higley. All rights reserved.
 //
 
-#include "sdlapplication.h"
+#include "application.h"
 #include "world.h"
 #include "ai/npc.h"
 #include "ai/state.h"
@@ -37,7 +37,7 @@ private:
 };
 
 
-void addNPC(SdlApplication& app, const char* behaviorFile)
+void addNPC(Application& app, const char* behaviorFile)
 {
     XmlDocument xmlDocument(behaviorFile);
 
@@ -53,7 +53,7 @@ void addNPC(SdlApplication& app, const char* behaviorFile)
 
 int main(int argc, const char * argv[])
 {
-	SdlApplication app{800, 800};
+	Application app{800, 800};
 
     addNPC(app, "bts/test.xml");
     addNPC(app, "bts/test2.xml");

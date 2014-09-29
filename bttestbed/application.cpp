@@ -1,22 +1,22 @@
 
-#include "sdlapplication.h"
+#include "application.h"
 
 #include "entity.h"
 
 #include <exception>
 #include <string>
 
-SdlApplication::SdlApplication(int width, int height)
+Application::Application(int width, int height)
     : window{ sf::VideoMode(width, height), "BT Test Bed" }
 {
     window.setFramerateLimit(30);
 }
 
-SdlApplication::~SdlApplication()
+Application::~Application()
 {
 }
 
-bool SdlApplication::beginFrame()
+bool Application::beginFrame()
 {
     sf::Event event;
     while( window.pollEvent(event) )
@@ -32,7 +32,7 @@ bool SdlApplication::beginFrame()
     return true;
 }
 
-bool SdlApplication::onEvent(const sf::Event& event)
+bool Application::onEvent(const sf::Event& event)
 {
 	switch( event.type )
 	{
@@ -76,7 +76,7 @@ bool SdlApplication::onEvent(const sf::Event& event)
     return true;
 }
 
-void SdlApplication::render()
+void Application::render()
 {
     window.clear();
 

@@ -8,13 +8,13 @@
 
 class Entity;
 
-class SdlApplication
+class Application
 {
 
 public:
 
-	SdlApplication(int width, int height);
-	~SdlApplication();
+	Application(int width, int height);
+	~Application();
 
     bool beginFrame();
 	void render();
@@ -25,11 +25,10 @@ public:
     
 private:
 
-	// Called to process SDL event.
 	bool onEvent(const sf::Event& event);
 	
-    SdlApplication(const SdlApplication&) = delete;
-    SdlApplication& operator=(const SdlApplication&) = delete;
+    Application(const Application&) = delete;
+    Application& operator=(const Application&) = delete;
         
     std::uint32_t currentTime = 0;
     
