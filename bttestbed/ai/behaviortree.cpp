@@ -82,75 +82,7 @@ void Tree::update(float dt)
     planningUpdateDuration += dt;
     if( activePath.empty() || planningUpdateDuration > planningUpdateDelay )
     {
-        planningUpdateDuration = 0.0f;
-        
-        const auto activeChildPtr = activePath.empty() ? nullptr : &activePath[0].getBehavior();
-        
-        for( const auto& currentChild : children )
-        {
-            if( currentChild.get() == activeChildPtr )
-            {
-                for( std::size_t activePathIndex = 0; activePathIndex < activePath.size(); ++activePathIndex )
-                {
-                    Base::PendingList pendingPath;
-                    
-                    const auto activeChildIndex = activePathIndex + 1;
-                    const auto activeChildPtr = activeChildIndex < activePath.size()
-                        ? &activePath[activeChildIndex].getBehavior()
-                        : nullptr;
-                    
-                    activePath[activePathIndex].getBehavior().reinitialize(activeChildPtr, pendingPath);
-                    
-                    if( !pendingPath.empty() )
-                    {
-                        // Term the remaining behaviors on the acive path.
-                        // Notice that this does not pop the behavior that
-                        // was just re-initialized.
-                        while( activePath.size() > activeChildIndex )
-                        {
-                            activePath.back().getBehavior().term();
-                            activePath.pop_back();
-                        }
-                        
-                        // Add the new behaviors to the active path.
-                        while( !pendingPath.empty() )
-                        {
-                            activePath.push_back( ActiveBehavior{*pendingPath.back()} );
-                            pendingPath.pop_back();
-                        }
-
-                        
-                        break;
-                    }
-                }
-                
-                break;
-            }
-            
-            Base::PendingList pendingPath;
-            const auto initializeResult = currentChild->initialize(pendingPath);
-            if( initializeResult == Result::Continue )
-            {
-                // Terminate the old path.
-                while( !activePath.empty() )
-                {
-                    activePath.back().getBehavior().term();
-                    activePath.pop_back();
-                }
-                
-                // Add the current child to the top of the active path.
-                activePath.push_back( ActiveBehavior{*currentChild} );
-                
-                // Add the rest of the path nodes to the active path.
-                // The search pushed the nodes back in reverse order.
-                while( !pendingPath.empty() )
-                {
-                    activePath.push_back( ActiveBehavior{*pendingPath.back()} );
-                    pendingPath.pop_back();
-                }
-                break;
-            }
-        }
+		replan();
     }
 
     // We want to always have a valid behavior.
@@ -179,7 +111,91 @@ void Tree::update(float dt)
             else
             {
                 currentIndex = handleResult(activePath, currentIndex, updateResult);
+
+				// Handle result will often leave us with an empty stack, re-plan in those situations.
+				if( activePath.empty() )
+				{
+					replan();
+					currentIndex = activePath.size();
+				}
             }
         }
     }
+
+	assert(!activePath.empty());
+}
+
+
+void Tree::replan()
+{
+	planningUpdateDuration = 0.0f;
+
+	const auto activeChildPtr = activePath.empty() ? nullptr : &activePath[0].getBehavior();
+
+	for( const auto& currentChild : children )
+	{
+		if( currentChild.get() == activeChildPtr )
+		{
+			for( std::size_t activePathIndex = 0; activePathIndex < activePath.size(); ++activePathIndex )
+			{
+				Base::PendingList pendingPath;
+
+				const auto activeChildIndex = activePathIndex + 1;
+				const auto activeChildPtr = activeChildIndex < activePath.size()
+					? &activePath[activeChildIndex].getBehavior()
+					: nullptr;
+
+				activePath[activePathIndex].getBehavior().reinitialize( activeChildPtr, pendingPath );
+
+				if( !pendingPath.empty() )
+				{
+					// Term the remaining behaviors on the acive path.
+					// Notice that this does not pop the behavior that
+					// was just re-initialized.
+					while( activePath.size() > activeChildIndex )
+					{
+						activePath.back().getBehavior().term();
+						activePath.pop_back();
+					}
+
+					// Add the new behaviors to the active path.
+					while( !pendingPath.empty() )
+					{
+						activePath.push_back( ActiveBehavior{ *pendingPath.back() } );
+						pendingPath.pop_back();
+					}
+
+
+					return;
+				}
+			}
+
+			return;
+		}
+
+		Base::PendingList pendingPath;
+		const auto initializeResult = currentChild->initialize( pendingPath );
+		if( initializeResult == Result::Continue )
+		{
+			// Terminate the old path.
+			while( !activePath.empty() )
+			{
+				activePath.back().getBehavior().term();
+				activePath.pop_back();
+			}
+
+			// Add the current child to the top of the active path.
+			activePath.push_back( ActiveBehavior{ *currentChild } );
+
+			// Add the rest of the path nodes to the active path.
+			// The search pushed the nodes back in reverse order.
+			while( !pendingPath.empty() )
+			{
+				activePath.push_back( ActiveBehavior{ *pendingPath.back() } );
+				pendingPath.pop_back();
+			}
+			
+			return;
+		}
+	}
 }

@@ -50,6 +50,8 @@ namespace AI
             
         private :
         
+			void replan();
+
             NPC&                    npc;
             std::vector<Base::Ptr>  children;
             ActiveList              activePath;
