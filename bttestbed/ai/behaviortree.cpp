@@ -16,7 +16,7 @@ using namespace AI::Behavior;
 
 namespace
 {
-    void handleResult(ActiveList& activePath, std::size_t currentIndex, Result result)
+    void handleResult(ActiveList& activePath, std::size_t currentIndex, Result currentResult)
     {
         // Terminate everything below us.
         while( activePath.size() > currentIndex )
@@ -25,34 +25,38 @@ namespace
             activePath.pop_back();
         }
 
-        // Nothing more to do if we emptied our path.
-        if( currentIndex == 0 )
+        while( currentIndex > 0 )
         {
-            assert(activePath.empty());
-            return;
-        }
-
-        const std::size_t parentIndex = currentIndex - 1;
-        
-        Base::PendingList pendingPath;
-        const auto parentResult = result == Result::Complete
-            ? activePath[parentIndex].getBehavior().onChildCompleted(pendingPath)
-            : activePath[parentIndex].getBehavior().onChildFailed(pendingPath);
-
-        if( parentResult == Result::Continue )
-        {
-            while( !pendingPath.empty() )
-            {
-                activePath.push_back( ActiveBehavior{*pendingPath.back()} );
-                pendingPath.pop_back();
-            }
+            const std::size_t parentIndex = currentIndex - 1;
             
-            return;
+            Base::PendingList pendingPath;
+            const auto parentResult = currentResult == Result::Complete
+                ? activePath[parentIndex].getBehavior().onChildCompleted(pendingPath)
+                : activePath[parentIndex].getBehavior().onChildFailed(pendingPath);
+
+            if( parentResult == Result::Continue )
+            {
+                while( !pendingPath.empty() )
+                {
+                    activePath.push_back( ActiveBehavior{*pendingPath.back()} );
+                    pendingPath.pop_back();
+                }
+                
+                return;
+            }
+        
+            assert( pendingPath.empty() );
+
+            // Pop the current node off the stack.
+            activePath.back().getBehavior().term();
+            activePath.pop_back();
+            
+            currentIndex  = parentIndex;
+            currentResult = parentResult;
         }
         
-        assert( pendingPath.empty() );
         
-        handleResult(activePath, parentIndex, parentResult);
+        assert(activePath.empty());
     }
 }
 
