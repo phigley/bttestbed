@@ -76,17 +76,6 @@ Tree::Tree(NPC& npc_, rapidxml::xml_node<>& rootNode)
 
 void Tree::update(float dt)
 {
-    const float planningUpdateDelay = 0.25f;
-    
-    planningUpdateDuration += dt;
-    if( activePath.empty() || planningUpdateDuration > planningUpdateDelay )
-    {
-		replan();
-    }
-
-    // We want to always have a valid behavior.
-    assert(!activePath.empty());
-
     for( auto currentIndex = 0; currentIndex < activePath.size(); ++currentIndex )
     {
         auto& currentChild = activePath[currentIndex];
@@ -98,16 +87,17 @@ void Tree::update(float dt)
             if( updateResult != Result::Continue )
             {
                 handleResult(activePath, currentIndex, updateResult);
-
-                // Handle result will often leave us with an empty stack, re-plan in those situations.
-                if( activePath.empty() )
-                {
-                    replan();
-                }
-                
                 break;
             }
         }
+    }
+
+    const float planningUpdateDelay = 0.25f;
+    
+    planningUpdateDuration += dt;
+    if( activePath.empty() || planningUpdateDuration > planningUpdateDelay )
+    {
+		replan();
     }
 
 	assert(!activePath.empty());
