@@ -80,7 +80,7 @@ Tree::Tree(NPC& npc_, rapidxml::xml_node<>& rootNode)
 
 void Tree::update(float dt)
 {
-    for( auto currentIndex = 0; currentIndex < activePath.size(); ++currentIndex )
+    for( std::size_t currentIndex = 0; currentIndex < activePath.size(); ++currentIndex )
     {
         auto& currentChild = activePath[currentIndex];
         
@@ -114,7 +114,7 @@ void Tree::replan()
 
 	const auto activeChildPtr = activePath.empty() ? nullptr : &activePath[0].getBehavior();
 
-    for( auto childIndex = 0; childIndex < children.size() && children[childIndex].get() != activeChildPtr; ++childIndex )
+    for( std::size_t childIndex = 0; childIndex < children.size() && children[childIndex].get() != activeChildPtr; ++childIndex )
 	{
         const auto& currentChild = children[childIndex];
         
@@ -151,8 +151,8 @@ void Tree::replan()
         
         const auto activeChildIndex = activePathIndex + 1;
         const auto activeChildPtr = activeChildIndex < activePath.size()
-        ? &activePath[activeChildIndex].getBehavior()
-        : nullptr;
+            ? &activePath[activeChildIndex].getBehavior()
+            : nullptr;
         
         activePath[activePathIndex].getBehavior().reinitialize( activeChildPtr, pendingPath );
         
