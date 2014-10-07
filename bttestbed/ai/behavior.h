@@ -82,8 +82,8 @@ namespace AI
 
             Priority(NPC& npc_, rapidxml::xml_node<>& priorityNode);
             
-            virtual Result initialize(PendingList&) override;
-            virtual void reinitialize(const Base* childPtr, PendingList& pendingBehaviors) override;
+            virtual Result initialize(PendingList&) final;
+            virtual void reinitialize(const Base* childPtr, PendingList& pendingBehaviors) final;
             
         private :
 
@@ -97,8 +97,8 @@ namespace AI
 
             Sequence(NPC& npc_, rapidxml::xml_node<>& sequenceNode);
         
-            virtual Result initialize(PendingList&) override;
-            virtual Result onChildCompleted(PendingList&) override;
+            virtual Result initialize(PendingList&) final;
+            virtual Result onChildCompleted(PendingList&) final;
                         
         private :
 
@@ -115,8 +115,8 @@ namespace AI
         
             Conditional(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
-            virtual Result initialize(PendingList&) override;
-            virtual Result update(float dt) override;
+            virtual Result initialize(PendingList&) final;
+            virtual Result update(float dt) final;
             virtual void   term() override;
             
         protected:
@@ -212,8 +212,8 @@ namespace AI
         public:
             Decorator(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
-            virtual Result initialize(PendingList&) override;
-            virtual void term() override;
+            virtual Result initialize(PendingList&) final;
+            virtual void term() final;
 
         protected:
         
