@@ -16,7 +16,7 @@ using namespace AI::Behavior;
 
 namespace
 {
-    std::size_t handleResult(ActiveList& activePath, std::size_t currentIndex, Result result)
+    void handleResult(ActiveList& activePath, std::size_t currentIndex, Result result)
     {
         // Terminate everything below us.
         while( activePath.size() > currentIndex )
@@ -29,7 +29,7 @@ namespace
         if( currentIndex == 0 )
         {
             assert(activePath.empty());
-            return 0;
+            return;
         }
 
         const std::size_t parentIndex = currentIndex - 1;
@@ -47,13 +47,12 @@ namespace
                 pendingPath.pop_back();
             }
             
-            // Increment past the end of the activeBehaviors to exit the loop.
-            return activePath.size();
+            return;
         }
         
         assert( pendingPath.empty() );
         
-        return handleResult(activePath, parentIndex, parentResult);
+        handleResult(activePath, parentIndex, parentResult);
     }
 }
 
@@ -88,36 +87,25 @@ void Tree::update(float dt)
     // We want to always have a valid behavior.
     assert(!activePath.empty());
 
-    if( !activePath.empty() )
+    for( auto currentIndex = 0; currentIndex < activePath.size(); ++currentIndex )
     {
-        std::size_t currentIndex = 0;
+        auto& currentChild = activePath[currentIndex];
         
-        while( currentIndex < activePath.size() )
+        if( currentChild.getRequiresUpdate() )
         {
-            ActiveBehavior& currentChild = activePath[currentIndex];
-            
-            if( !currentChild.getRequiresUpdate() )
-            {
-                ++currentIndex;
-                continue;
-            }
-            
             const auto updateResult = currentChild.getBehavior().update(dt);
             
-            if( updateResult == Result::Continue )
+            if( updateResult != Result::Continue )
             {
-                ++currentIndex;
-            }
-            else
-            {
-                currentIndex = handleResult(activePath, currentIndex, updateResult);
+                handleResult(activePath, currentIndex, updateResult);
 
-				// Handle result will often leave us with an empty stack, re-plan in those situations.
-				if( activePath.empty() )
-				{
-					replan();
-					currentIndex = activePath.size();
-				}
+                // Handle result will often leave us with an empty stack, re-plan in those situations.
+                if( activePath.empty() )
+                {
+                    replan();
+                }
+                
+                break;
             }
         }
     }
@@ -132,47 +120,10 @@ void Tree::replan()
 
 	const auto activeChildPtr = activePath.empty() ? nullptr : &activePath[0].getBehavior();
 
-	for( const auto& currentChild : children )
+    for( auto childIndex = 0; childIndex < children.size() && children[childIndex].get() != activeChildPtr; ++childIndex )
 	{
-		if( currentChild.get() == activeChildPtr )
-		{
-			for( std::size_t activePathIndex = 0; activePathIndex < activePath.size(); ++activePathIndex )
-			{
-				Base::PendingList pendingPath;
-
-				const auto activeChildIndex = activePathIndex + 1;
-				const auto activeChildPtr = activeChildIndex < activePath.size()
-					? &activePath[activeChildIndex].getBehavior()
-					: nullptr;
-
-				activePath[activePathIndex].getBehavior().reinitialize( activeChildPtr, pendingPath );
-
-				if( !pendingPath.empty() )
-				{
-					// Term the remaining behaviors on the acive path.
-					// Notice that this does not pop the behavior that
-					// was just re-initialized.
-					while( activePath.size() > activeChildIndex )
-					{
-						activePath.back().getBehavior().term();
-						activePath.pop_back();
-					}
-
-					// Add the new behaviors to the active path.
-					while( !pendingPath.empty() )
-					{
-						activePath.push_back( ActiveBehavior{ *pendingPath.back() } );
-						pendingPath.pop_back();
-					}
-
-
-					return;
-				}
-			}
-
-			return;
-		}
-
+        const auto& currentChild = children[childIndex];
+        
 		Base::PendingList pendingPath;
 		const auto initializeResult = currentChild->initialize( pendingPath );
 		if( initializeResult == Result::Continue )
@@ -198,4 +149,38 @@ void Tree::replan()
 			return;
 		}
 	}
+
+    // Give the active path a chance to re-initialize.
+    for( std::size_t activePathIndex = 0; activePathIndex < activePath.size(); ++activePathIndex )
+    {
+        Base::PendingList pendingPath;
+        
+        const auto activeChildIndex = activePathIndex + 1;
+        const auto activeChildPtr = activeChildIndex < activePath.size()
+        ? &activePath[activeChildIndex].getBehavior()
+        : nullptr;
+        
+        activePath[activePathIndex].getBehavior().reinitialize( activeChildPtr, pendingPath );
+        
+        if( !pendingPath.empty() )
+        {
+            // Term the remaining behaviors on the acive path.
+            // Notice that this does not pop the behavior that
+            // was just re-initialized.
+            while( activePath.size() > activeChildIndex )
+            {
+                activePath.back().getBehavior().term();
+                activePath.pop_back();
+            }
+            
+            // Add the new behaviors to the active path.
+            while( !pendingPath.empty() )
+            {
+                activePath.push_back( ActiveBehavior{ *pendingPath.back() } );
+                pendingPath.pop_back();
+            }
+            
+            return;
+        }
+    }
 }
