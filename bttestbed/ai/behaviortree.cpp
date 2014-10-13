@@ -36,7 +36,7 @@ namespace
         while( !activePath.empty() )
         {
 			// Notify the parent.
-			Base::PendingList pendingPath;
+			PendingPath pendingPath( &activePath.back().getBehavior(), activePath );
             const auto parentResult = currentResult == Result::Complete
                 ? activePath.back().getBehavior().onChildCompleted(pendingPath)
 				: activePath.back().getBehavior().onChildFailed( pendingPath );
@@ -45,12 +45,7 @@ namespace
 			if( parentResult == Result::Continue )
             {
 				// Parent has a new sub-plan, add it.
-                while( !pendingPath.empty() )
-                {
-                    activePath.push_back( ActiveBehavior{*pendingPath.back()} );
-                    pendingPath.pop_back();
-                }
-                
+				pendingPath.activatePendingPlan();
                 return;
             }
         
@@ -126,7 +121,7 @@ void Tree::replan()
 		}
 
 
-		Base::PendingList pendingPath;
+		PendingPath pendingPath(nullptr, activePath);
 		const auto initializeResult = currentChild->initialize( pendingPath );
 		if( initializeResult == Result::Continue )
 		{
@@ -136,15 +131,11 @@ void Tree::replan()
 				activePath.back().getBehavior().term();
 				activePath.pop_back();
 			}
-
-			// Add the rest of the path nodes to the active path.
-			// The search pushed the nodes back in reverse order.
-			while( !pendingPath.empty() )
-			{
-				activePath.push_back( ActiveBehavior{ *pendingPath.back() } );
-				pendingPath.pop_back();
-			}
 			
+			// Add the current child to the top of the active path.
+			activePath.push_back( ActiveBehavior{ *currentChild.get() } );
+
+			pendingPath.activatePendingPlan();
 			return;
 		}
 	}
@@ -159,7 +150,7 @@ void Tree::replan()
         
 		auto& currentBehavior = iterPath->getBehavior();
 
-		Base::PendingList pendingPath;
+		PendingPath pendingPath(&currentBehavior, activePath);
 		currentBehavior.reinitialize( activeChildPtr, pendingPath );
         
         if( !pendingPath.empty() )
@@ -173,16 +164,8 @@ void Tree::replan()
                 activePath.pop_back();
             }
             
-			// Remove the currentBehavior from the pending path, it is already in activePath.
-			pendingPath.pop_back();
-
             // Add the new behaviors to the active path.
-            while( !pendingPath.empty() )
-            {
-                activePath.push_back( ActiveBehavior{ *pendingPath.back() } );
-                pendingPath.pop_back();
-            }
-            
+			pendingPath.activatePendingPlan();
             return;
         }
     }

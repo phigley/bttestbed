@@ -27,6 +27,28 @@ namespace AI
     {
         class Base;
         
+
+		class ActiveBehavior
+		{
+		public:
+
+			explicit ActiveBehavior( Base& );
+
+			bool     getRequiresUpdate() const { return requiresUpdate; }
+
+			Base&    getBehavior() { return behavior; }
+			const Base& getBehavior() const { return behavior; }
+
+		private:
+
+			bool    requiresUpdate;
+			Base&   behavior;
+		};
+
+		typedef std::vector<ActiveBehavior> ActiveList;
+
+		class PendingPath;
+
         class Base
         {
         public:
@@ -34,8 +56,7 @@ namespace AI
             
             typedef std::unique_ptr<Base>       Ptr;
             
-            typedef std::vector<Base*>          PendingList;
-            
+                       
         public:
 
             Base(NPC& npc_, bool requiresUpdate_)
@@ -46,13 +67,13 @@ namespace AI
             virtual ~Base() { }
 
             // Called to set-up the behavior.
-            virtual Result initialize(PendingList& pendingBehaviors) { return Result::Continue; }
+            virtual Result initialize(PendingPath& pendingBehaviors) { return Result::Continue; }
             
             // Called on the active child during planning updates.
             // childPtr contains a pointer to the behavior's child (so the behavior does not need to track that itself).
             // If pendingBehaviors comes back non-empty, the remaining children will be terminated and replaced with
             // pendingBehaviors.
-            virtual void reinitialize(const Base* childPtr, PendingList& pendingBehaviors) { }
+            virtual void reinitialize(const Base* childPtr, PendingPath& pendingBehaviors) { }
             
             // Called if initialize returned Result::Continue.
             virtual Result update(float dt) { return Result::Continue; }
@@ -60,8 +81,8 @@ namespace AI
             // Called if and only if initialize returned Result::Continue.
             virtual void term() { }
             
-            virtual Result onChildFailed(PendingList&)      { return Result::Fail; }
-            virtual Result onChildCompleted(PendingList&)   { return Result::Complete; }
+            virtual Result onChildFailed(PendingPath&)      { return Result::Fail; }
+            virtual Result onChildCompleted(PendingPath&)   { return Result::Complete; }
             
             NPC& getNPC() { return npc; }
             const NPC& getNPC() const { return npc; }
@@ -76,14 +97,42 @@ namespace AI
 
         Base::Ptr createChild(NPC& npc, rapidxml::xml_node<>& node);
 
+		class PendingPath
+		{
+		public:
+
+			typedef std::vector<Base*>          PendingList;
+
+		public:
+
+			PendingPath( const Base* childPtr_, ActiveList& activeList_ )
+				: childPtr( childPtr_ )
+				, activeList( activeList_ )
+			{ }
+
+			void addChildBehavior( Base& behavior );
+
+			void terminateOldPlan();
+			void activatePendingPlan();
+
+			bool empty() const { return pendingList.empty(); }
+
+		private:
+			friend class Tree;
+
+			const Base* childPtr;
+			ActiveList& activeList;
+			PendingList pendingList;
+		};
+
         class Priority : public Base
         {
         public:
 
             Priority(NPC& npc_, rapidxml::xml_node<>& priorityNode);
             
-            virtual Result initialize(PendingList&) final;
-            virtual void reinitialize(const Base* childPtr, PendingList& pendingBehaviors) final;
+            virtual Result initialize(PendingPath&) final;
+            virtual void reinitialize(const Base* childPtr, PendingPath& pendingPath) final;
             
         private :
 
@@ -97,12 +146,12 @@ namespace AI
 
             Sequence(NPC& npc_, rapidxml::xml_node<>& sequenceNode);
         
-            virtual Result initialize(PendingList&) final;
-            virtual Result onChildCompleted(PendingList&) final;
+            virtual Result initialize(PendingPath&) final;
+            virtual Result onChildCompleted(PendingPath&) final;
                         
         private :
 
-            Result initializeNextChild(PendingList& activeList);
+            Result initializeNextChild(PendingPath& activeList);
 
             std::vector<Ptr>    children;
             std::size_t         activeChild = std::numeric_limits<std::size_t>::max();
@@ -115,7 +164,7 @@ namespace AI
         
             Conditional(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
-            virtual Result initialize(PendingList&) final;
+            virtual Result initialize(PendingPath&) final;
             virtual Result update(float dt) final;
             virtual void   term() override;
             
@@ -153,7 +202,7 @@ namespace AI
 
             MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode);
 
-            virtual Result initialize(PendingList&) override;
+            virtual Result initialize(PendingPath&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
 
@@ -170,7 +219,7 @@ namespace AI
         
             MoveTowardTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
-            virtual Result initialize(PendingList&) override;
+            virtual Result initialize(PendingPath&) override;
             virtual Result update(float dt) override;
             virtual void term() override;
             
@@ -188,7 +237,7 @@ namespace AI
         
             Wait(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
-            virtual Result initialize(PendingList&) override;
+            virtual Result initialize(PendingPath&) override;
             virtual Result update(float dt) override;
 
         private:
@@ -204,7 +253,7 @@ namespace AI
         
             ClearTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
-            virtual Result initialize(PendingList&) override;
+            virtual Result initialize(PendingPath&) override;
         };
         
         class Decorator : public Base
@@ -212,7 +261,7 @@ namespace AI
         public:
             Decorator(NPC& npc_, rapidxml::xml_node<>& xmlNode);
             
-            virtual Result initialize(PendingList&) final;
+            virtual Result initialize(PendingPath&) final;
             virtual void term() final;
 
         protected:

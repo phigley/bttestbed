@@ -21,25 +21,7 @@ namespace AI
 
     namespace Behavior
     {
-        class ActiveBehavior
-        {
-        public:
-        
-            explicit ActiveBehavior(Base&);
-            
-            bool     getRequiresUpdate() const { return requiresUpdate; }
-            
-            Base&    getBehavior() { return behavior; }
-            const Base& getBehavior() const { return behavior; }
-            
-        private :
-        
-            bool    requiresUpdate;
-            Base&   behavior;
-        };
-
-        typedef std::vector<ActiveBehavior> ActiveList;
-        
+       
         class Tree
         {
         public:

@@ -37,6 +37,31 @@ Base::Ptr AI::Behavior::createChild(NPC& npc, rapidxml::xml_node<>& node)
     return Base::Ptr{};
 }
 
+void PendingPath::addChildBehavior( Base& behavior )
+{
+	pendingList.push_back( &behavior );
+}
+
+void PendingPath::terminateOldPlan()
+{
+	while( !activeList.empty() && &activeList.back().getBehavior() != childPtr )
+	{
+		activeList.back().getBehavior().term();
+		activeList.pop_back();
+	}
+}
+
+void PendingPath::activatePendingPlan()
+{
+	// Add the rest of the path nodes to the active path.
+	// The search pushed the nodes back in reverse order.
+	while( !pendingList.empty() )
+	{
+		activeList.push_back( ActiveBehavior{ *pendingList.back() } );
+		pendingList.pop_back();
+	}
+}
+
 Priority::Priority(NPC& npc_, rapidxml::xml_node<>& priorityNode)
     : Base{npc_, false}
 {
@@ -47,15 +72,15 @@ Priority::Priority(NPC& npc_, rapidxml::xml_node<>& priorityNode)
     }
 }
 
-Result Priority::initialize(PendingList& pendingPath)
+Result Priority::initialize(PendingPath& pendingPath)
 {
     bool allCompleted = true;
-    for(std::size_t iChild = 0; iChild < children.size(); ++iChild)
+	for( auto& child : children )
     {
-        const auto result = children[iChild]->initialize(pendingPath);
+		const auto result = child->initialize( pendingPath );
         if( result == Result::Continue )
         {
-            pendingPath.push_back(this);
+			pendingPath.addChildBehavior( *child.get() );
             return result;
         }
 
@@ -67,14 +92,19 @@ Result Priority::initialize(PendingList& pendingPath)
         : Result::Fail;
 }
 
-void Priority::reinitialize(const Base* childPtr, PendingList& pendingPath)
+void Priority::reinitialize(const Base* childPtr, PendingPath& pendingPath)
 {
-    for(std::size_t iChild = 0; iChild < children.size() && children[iChild].get() != childPtr; ++iChild)
+	for( auto& child : children )
     {
-        const auto result = children[iChild]->initialize(pendingPath);
+		if( child.get() == childPtr )
+		{
+			return;
+		}
+
+        const auto result = child->initialize(pendingPath);
         if( result == Result::Continue )
         {
-            pendingPath.push_back(this);
+            pendingPath.addChildBehavior(*child.get());
             return;
         }
 
@@ -91,19 +121,19 @@ Sequence::Sequence(NPC& npc_, rapidxml::xml_node<>& sequenceNode)
     }
 }
 
-Result Sequence::initialize(PendingList& pendingPath)
+Result Sequence::initialize(PendingPath& pendingPath)
 {
     activeChild = 0;
     return initializeNextChild(pendingPath);
 }
 
-Result Sequence::onChildCompleted(PendingList& pendingPath)
+Result Sequence::onChildCompleted(PendingPath& pendingPath)
 {
     ++activeChild;
     return initializeNextChild(pendingPath);
 }
 
-Result Sequence::initializeNextChild(PendingList& pendingPath)
+Result Sequence::initializeNextChild(PendingPath& pendingPath)
 {
     // Keep initializing the next child while they return Complete.
     for( ; activeChild < children.size(); ++activeChild )
@@ -114,7 +144,7 @@ Result Sequence::initializeNextChild(PendingList& pendingPath)
         {
             if( initializeResult == Result::Continue )
             {
-                pendingPath.push_back(this);
+				pendingPath.addChildBehavior( *children[activeChild].get() );
             }
             
             return initializeResult;
@@ -137,7 +167,7 @@ Conditional::Conditional(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     }
 }
 
-Result Conditional::initialize(PendingList& pendingPath)
+Result Conditional::initialize(PendingPath& pendingPath)
 {
     if( !setUp() )
         return Result::Fail;
@@ -161,7 +191,7 @@ Result Conditional::initialize(PendingList& pendingPath)
         return initializeResult;
     }
     
-    pendingPath.push_back(this);
+    pendingPath.addChildBehavior(*child.get());
     
     return Result::Continue;
 }
@@ -240,14 +270,14 @@ MoveAtVelocity::MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode)
 }
 
 
-Result MoveAtVelocity::initialize(PendingList& pendingPath)
+Result MoveAtVelocity::initialize(PendingPath& pendingPath)
 {
     state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});
     
     if( !state )
         return Result::Fail;
     
-	pendingPath.push_back( this );
+	pendingPath.terminateOldPlan();
     return Result::Continue;
 }
 
@@ -291,7 +321,7 @@ MoveTowardTarget::MoveTowardTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
 }
 
 
-Result MoveTowardTarget::initialize(PendingList& pendingPath)
+Result MoveTowardTarget::initialize(PendingPath& pendingPath)
 {
     if( !getNPC().getTargetPos())
         return Result::Fail;
@@ -309,12 +339,14 @@ Result MoveTowardTarget::initialize(PendingList& pendingPath)
             return Result::Complete;
     }
     
+	
+
     state = std::unique_ptr<State::MoveTowardTarget>(new State::MoveTowardTarget{getNPC(), speed, desiredRange});
     
     if( !state )
         return Result::Fail;
     
-	pendingPath.push_back( this );
+	pendingPath.terminateOldPlan();
     return Result::Continue;
 }
 
@@ -350,13 +382,13 @@ Wait::Wait(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     assert(xmlNode.first_node() == nullptr);
 }
 
-Result Wait::initialize( PendingList& pendingPath )
+Result Wait::initialize( PendingPath& pendingPath )
 {
     if( duration <= 0.0f )
         return Result::Complete;
     
     timeRemaining = duration;
-	pendingPath.push_back( this );
+	pendingPath.terminateOldPlan(); 
     return Result::Continue;
 }
 
@@ -377,7 +409,7 @@ ClearTarget::ClearTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     assert(xmlNode.first_node() == nullptr);
 }
 
-Result ClearTarget::initialize(PendingList&)
+Result ClearTarget::initialize(PendingPath&)
 {
     getNPC().clearTarget();
     return Result::Complete;
@@ -395,7 +427,7 @@ Decorator::Decorator(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     }
 }
 
-Result Decorator::initialize(PendingList& pendingPath)
+Result Decorator::initialize(PendingPath& pendingPath)
 {
     if( !setUp() )
         return Result::Fail;
@@ -408,7 +440,7 @@ Result Decorator::initialize(PendingList& pendingPath)
         return initializeResult;
     }
     
-    pendingPath.push_back(this);
+	pendingPath.addChildBehavior( *child.get() );
     return Result::Continue;
 }
 
