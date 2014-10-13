@@ -55,7 +55,7 @@ Result Priority::initialize(PendingList& pendingPath)
         const auto result = children[iChild]->initialize(pendingPath);
         if( result == Result::Continue )
         {
-            pendingPath.push_back(children[iChild].get());
+            pendingPath.push_back(this);
             return result;
         }
 
@@ -74,7 +74,7 @@ void Priority::reinitialize(const Base* childPtr, PendingList& pendingPath)
         const auto result = children[iChild]->initialize(pendingPath);
         if( result == Result::Continue )
         {
-            pendingPath.push_back(children[iChild].get());
+            pendingPath.push_back(this);
             return;
         }
 
@@ -114,7 +114,7 @@ Result Sequence::initializeNextChild(PendingList& pendingPath)
         {
             if( initializeResult == Result::Continue )
             {
-                pendingPath.push_back(children[activeChild].get());
+                pendingPath.push_back(this);
             }
             
             return initializeResult;
@@ -161,7 +161,7 @@ Result Conditional::initialize(PendingList& pendingPath)
         return initializeResult;
     }
     
-    pendingPath.push_back(child.get());
+    pendingPath.push_back(this);
     
     return Result::Continue;
 }
@@ -240,13 +240,14 @@ MoveAtVelocity::MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode)
 }
 
 
-Result MoveAtVelocity::initialize(PendingList&)
+Result MoveAtVelocity::initialize(PendingList& pendingPath)
 {
     state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});
     
     if( !state )
         return Result::Fail;
     
+	pendingPath.push_back( this );
     return Result::Continue;
 }
 
@@ -290,7 +291,7 @@ MoveTowardTarget::MoveTowardTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
 }
 
 
-Result MoveTowardTarget::initialize(PendingList&)
+Result MoveTowardTarget::initialize(PendingList& pendingPath)
 {
     if( !getNPC().getTargetPos())
         return Result::Fail;
@@ -313,6 +314,7 @@ Result MoveTowardTarget::initialize(PendingList&)
     if( !state )
         return Result::Fail;
     
+	pendingPath.push_back( this );
     return Result::Continue;
 }
 
@@ -348,12 +350,13 @@ Wait::Wait(NPC& npc_, rapidxml::xml_node<>& xmlNode)
     assert(xmlNode.first_node() == nullptr);
 }
 
-Result Wait::initialize(PendingList&)
+Result Wait::initialize( PendingList& pendingPath )
 {
     if( duration <= 0.0f )
         return Result::Complete;
     
     timeRemaining = duration;
+	pendingPath.push_back( this );
     return Result::Continue;
 }
 
@@ -405,7 +408,7 @@ Result Decorator::initialize(PendingList& pendingPath)
         return initializeResult;
     }
     
-    pendingPath.push_back(child.get());
+    pendingPath.push_back(this);
     return Result::Continue;
 }
 

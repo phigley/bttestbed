@@ -137,9 +137,6 @@ void Tree::replan()
 				activePath.pop_back();
 			}
 
-			// Add the current child to the top of the active path.
-			activePath.push_back( ActiveBehavior{ *currentChild } );
-
 			// Add the rest of the path nodes to the active path.
 			// The search pushed the nodes back in reverse order.
 			while( !pendingPath.empty() )
@@ -176,6 +173,9 @@ void Tree::replan()
                 activePath.pop_back();
             }
             
+			// Remove the currentBehavior from the pending path, it is already in activePath.
+			pendingPath.pop_back();
+
             // Add the new behaviors to the active path.
             while( !pendingPath.empty() )
             {
