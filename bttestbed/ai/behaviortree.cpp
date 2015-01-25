@@ -63,14 +63,14 @@ namespace
 
 
 ActiveBehavior::ActiveBehavior(Base& behavior_)
-    : requiresUpdate{behavior_.getRequiresUpdate()}
-    , behavior{behavior_}
+    : requiresUpdate(behavior_.getRequiresUpdate())
+    , behavior(behavior_)
 {
 }
 
 
 Tree::Tree(NPC& npc_, rapidxml::xml_node<>& rootNode)
-    : npc{npc_}
+    : npc(npc_)
 {
     assert(0 == strcmp(rootNode.name(), "root"));
     for( auto childNode = rootNode.first_node(); childNode; childNode = childNode->next_sibling() )
@@ -133,7 +133,7 @@ void Tree::replan()
 			}
 			
 			// Add the current child to the top of the active path.
-			activePath.push_back( ActiveBehavior{ *currentChild.get() } );
+			activePath.push_back( ActiveBehavior( *currentChild.get() ) );
 
 			pendingPath.activatePendingPlan();
 			return;

@@ -18,23 +18,23 @@ using namespace AI::Behavior;
 Base::Ptr AI::Behavior::createChild(NPC& npc, rapidxml::xml_node<>& node)
 {
     if( strcmp(node.name(), "priority") == 0 )
-        return Base::Ptr{ new Priority{npc, node} };
+        return Base::Ptr( new Priority(npc, node) );
     if( strcmp(node.name(), "sequence") == 0 )
-        return Base::Ptr{ new Sequence{npc, node} };
+        return Base::Ptr( new Sequence(npc, node) );
     if( strcmp(node.name(), "hastarget") == 0 )
-        return Base::Ptr{ new HasTarget{npc, node} };
+        return Base::Ptr( new HasTarget(npc, node) );
     if( strcmp(node.name(), "moveatvelocity") == 0 )
-        return Base::Ptr{ new MoveAtVelocity{npc, node} };
+        return Base::Ptr( new MoveAtVelocity(npc, node) );
     if( strcmp(node.name(), "movetowardtarget") == 0 )
-        return Base::Ptr{ new MoveTowardTarget{npc, node} };
+        return Base::Ptr( new MoveTowardTarget(npc, node) );
     if( strcmp(node.name(), "wait") == 0 )
-        return Base::Ptr{ new Wait{npc, node} };
+        return Base::Ptr( new Wait(npc, node) );
     if( strcmp(node.name(), "cleartarget") == 0 )
-        return Base::Ptr{ new ClearTarget{npc, node} };
+        return Base::Ptr( new ClearTarget(npc, node) );
     if( strcmp(node.name(), "locktarget") == 0 )
-        return Base::Ptr{ new LockTarget{npc, node} };
+        return Base::Ptr( new LockTarget(npc, node) );
     
-    return Base::Ptr{};
+    return Base::Ptr();
 }
 
 void PendingPath::addChildBehavior( Base& behavior )
@@ -57,13 +57,13 @@ void PendingPath::activatePendingPlan()
 	// The search pushed the nodes back in reverse order.
 	while( !pendingList.empty() )
 	{
-		activeList.push_back( ActiveBehavior{ *pendingList.back() } );
+		activeList.push_back( ActiveBehavior( *pendingList.back() ) );
 		pendingList.pop_back();
 	}
 }
 
 Priority::Priority(NPC& npc_, rapidxml::xml_node<>& priorityNode)
-    : Base{npc_, false}
+    : Base(npc_, false)
 {
     for( auto childNode = priorityNode.first_node(); childNode; childNode = childNode->next_sibling() )
     {
@@ -112,7 +112,7 @@ void Priority::reinitialize(const Base* childPtr, PendingPath& pendingPath)
 }
 
 Sequence::Sequence(NPC& npc_, rapidxml::xml_node<>& sequenceNode)
-    : Base{npc_, false}
+    : Base(npc_, false)
 {
     for( auto childNode = sequenceNode.first_node(); childNode; childNode = childNode->next_sibling() )
     {
@@ -155,7 +155,7 @@ Result Sequence::initializeNextChild(PendingPath& pendingPath)
 }
 
 Conditional::Conditional(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Base{npc_, true}
+    : Base(npc_, true)
 {
     auto childNode = xmlNode.first_node();
     assert(childNode);
@@ -213,8 +213,8 @@ void Conditional::term()
 }
 
 HasTarget::HasTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Conditional{npc_, xmlNode}
-    , maxDuration{-1.0f}
+    : Conditional(npc_, xmlNode)
+    , maxDuration(-1.0f)
 {
     for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
     {
@@ -246,8 +246,8 @@ bool HasTarget::isComplete() const
 }
 
 MoveAtVelocity::MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Base{npc_, true}
-    , velocity{0,0}
+    : Base(npc_, true)
+    , velocity(0,0)
 {
     for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
     {
@@ -272,7 +272,7 @@ MoveAtVelocity::MoveAtVelocity(NPC& npc_, rapidxml::xml_node<>& xmlNode)
 
 Result MoveAtVelocity::initialize(PendingPath& pendingPath)
 {
-    state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity{getNPC(), velocity});
+    state = std::unique_ptr<State::MoveAtVelocity>(new State::MoveAtVelocity(getNPC(), velocity) );
     
     if( !state )
         return Result::Fail;
@@ -296,9 +296,9 @@ void MoveAtVelocity::term()
 
 
 MoveTowardTarget::MoveTowardTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Base{npc_, true}
-    , speed{0}
-    , desiredRange{0}
+    : Base(npc_, true)
+    , speed(0)
+    , desiredRange(0)
 {
     for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
     {
@@ -341,7 +341,7 @@ Result MoveTowardTarget::initialize(PendingPath& pendingPath)
     
 	
 
-    state = std::unique_ptr<State::MoveTowardTarget>(new State::MoveTowardTarget{getNPC(), speed, desiredRange});
+    state = std::unique_ptr<State::MoveTowardTarget>(new State::MoveTowardTarget(getNPC(), speed, desiredRange));
     
     if( !state )
         return Result::Fail;
@@ -364,8 +364,8 @@ void MoveTowardTarget::term()
 }
 
 Wait::Wait(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Base{npc_, true}
-    , duration{0}
+    : Base(npc_, true)
+    , duration(0)
 {
     for( auto attribute = xmlNode.first_attribute(); attribute; attribute = attribute->next_attribute())
     {
@@ -404,7 +404,7 @@ Result Wait::update(float dt)
 }
 
 ClearTarget::ClearTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Base{npc_, false}
+    : Base(npc_, false)
 {
     assert(xmlNode.first_node() == nullptr);
 }
@@ -416,7 +416,7 @@ Result ClearTarget::initialize(PendingPath&)
 }
 
 Decorator::Decorator(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Base{npc_, false}
+    : Base(npc_, false)
 {
     auto childNodePtr = xmlNode.first_node();
     assert(childNodePtr != nullptr);
@@ -450,7 +450,7 @@ void Decorator::term()
 }
 
 LockTarget::LockTarget(NPC& npc_, rapidxml::xml_node<>& xmlNode)
-    : Decorator{npc_, xmlNode}
+    : Decorator(npc_, xmlNode)
 {
 }
 

@@ -26,7 +26,7 @@ void World::render(sf::RenderWindow& window, int windowWidth, int windowHeight)
     {
         const auto targetSize = 3.0f;
         
-        auto targetShape = sf::RectangleShape{ sf::Vector2f{3.0f, 3.0f} };
+        auto targetShape = sf::RectangleShape( sf::Vector2f(3.0f, 3.0f) );
         
         const auto drawPos = sf::Vector2f
             { (targetPos->x*0.5f + 0.5f)*float(windowWidth) - targetSize*0.5f

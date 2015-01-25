@@ -26,8 +26,8 @@ namespace AI
         public:
 
             MoveAtVelocity(NPC& npc_, const glm::vec2& velocity_)
-                : npc{npc_}
-                , velocity{velocity_}
+                : npc(npc_)
+                , velocity(velocity_)
             { }
             
             Result update(float dt);
@@ -43,9 +43,9 @@ namespace AI
         public:
         
             MoveTowardTarget(NPC& npc_, float speed_, float desiredRange_)
-                : npc{npc_}
-                , speed{speed_}
-                , desiredRange{ std::max(desiredRange_, 0.0f) }
+                : npc(npc_)
+                , speed(speed_)
+                , desiredRange( std::max(desiredRange_, 0.0f) )
             { }
             
             Result update(float dt);

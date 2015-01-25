@@ -16,7 +16,7 @@
 using namespace AI;
 
 NPC::NPC(rapidxml::xml_node<>& behaviorDescription)
-    : behaviorTree{ *this, behaviorDescription }
+    : behaviorTree( *this, behaviorDescription )
 {
 }
 

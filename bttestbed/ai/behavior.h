@@ -60,8 +60,8 @@ namespace AI
         public:
 
             Base(NPC& npc_, bool requiresUpdate_)
-                : npc{npc_}
-                , requiresUpdate{requiresUpdate_}
+                : npc(npc_)
+                , requiresUpdate(requiresUpdate_)
             { }
             
             virtual ~Base() { }

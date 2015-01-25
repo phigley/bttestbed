@@ -7,7 +7,7 @@
 #include <string>
 
 Application::Application(int width, int height)
-    : window{ sf::VideoMode(width, height), "BT Test Bed" }
+    : window( sf::VideoMode(width, height), "BT Test Bed" )
 {
     window.setFramerateLimit(30);
 }

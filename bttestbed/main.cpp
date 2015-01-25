@@ -53,7 +53,7 @@ void addNPC(Application& app, const char* behaviorFile)
 
 int main(int argc, const char * argv[])
 {
-	Application app{800, 800};
+	Application app(800, 800);
 
     addNPC(app, "bts/test.xml");
     addNPC(app, "bts/test2.xml");
