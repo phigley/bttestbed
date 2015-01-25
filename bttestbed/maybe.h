@@ -42,13 +42,6 @@ public:
         return *this;
     }
     
-    Maybe& operator=(const T& rhs)
-    {
-        value = rhs;
-        valid = true;
-        return *this;
-    }
-
     T& operator*() { assert(valid); return value; }
     const T& operator*() const { assert(valid); return value; }
     
